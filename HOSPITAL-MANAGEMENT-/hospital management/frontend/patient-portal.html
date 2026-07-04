@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal | Luxury Care</title>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/luxury.css">
+    <style>
+        /* Specific Portal Overrides */
+        body { overflow-x: hidden; }
+        .hero-banner {
+            width: 100%; height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px; margin-bottom: 2rem;
+            position: relative; overflow: hidden;
+            display: flex; align-items: flex-end; padding: 2rem;
+        }
+        .hero-banner::after {
+            content: ''; position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            opacity: 0.3; mix-blend-mode: overlay;
+        }
+        
+        .hero-title {
+            color: white; font-size: 2.2rem; position: relative; z-index: 10; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Payment Gateway Cards */
+        .payment-method {
+            border: 1px solid var(--border-solid); padding: 1rem; border-radius: 12px;
+            display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: 0.3s;
+        }
+        .payment-method:hover, .payment-method.selected {
+            border-color: var(--primary); background: rgba(var(--primary-rgb), 0.05);
+        }
+        
+        /* Chatbot Widget */
+        #chatbot-widget {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            width: 350px; background: var(--surface); border: 1px solid var(--border-solid);
+            border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; transform: translateY(150%);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #chatbot-widget.active { transform: translateY(0); }
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;
+            padding: 1rem; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-body { height: 300px; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+        .chat-msg { max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px; font-size: 0.9rem; }
+        .msg-bot { background: var(--surface-active); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg-user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        .chat-input { display: flex; padding: 1rem; border-top: 1px solid var(--border-solid); gap: 0.5rem; }
+        
+        /* News Cards */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .news-card { border: 1px solid var(--border-solid); border-radius: 12px; overflow: hidden; transition: 0.3s; background: var(--surface); cursor: pointer; }
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-color: var(--primary); }
+        .news-img { width: 100%; height: 160px; object-fit: cover; }
+        .news-content { padding: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <!-- ==============================================
+         AUTHENTICATION LAYER (LOGIN / REGISTER)
+         ============================================== -->
+    <div id="auth-view" class="auth-layout" style="display:flex;">
+        <div class="auth-banner" style="background: url('https://images.unsplash.com/photo-1538108149393-cebb47ac8d4d?w=800&q=80') center/cover;">
+            <div class="auth-banner-overlay" style="background:linear-gradient(to bottom, transparent, rgba(15,23,42,0.95))">
+                <div class="branding">Luxury Care</div>
+                <h2 style="font-size:2.5rem; font-weight:800; line-height:1.2;">Your Premium<br>Health Companion.</h2>
+            </div>
+        </div>
+
+        <div class="auth-panel" style="overflow-y:auto; padding:3rem;">
+            <div style="flex:1;">
+                <h2 id="auth-title">Patient Portal Access</h2>
+                <p id="auth-subtitle" style="color:var(--text-muted); margin-bottom: 2rem;">Log in to view appointments and records.</p>
+                
+                <!-- LOGIN FORM -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label">Phone or Email</label>
+                        <div class="input-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="text" id="auth-user" class="form-control" placeholder="+1 (555) 000-0000" required>
+                        </div>
+                    </div>
+                    <div id="otp-group" class="form-group hidden">
+                        <input type="text" id="auth-otp" class="form-control" placeholder="Enter 6-Digit OTP" maxlength="6">
+                        <div class="flex justify-between" style="font-size:0.8rem; margin-top:0.5rem; color:var(--text-muted);">
+                            <span id="otp-timer">Expires in: 01:00</span>
+                            <a href="#" style="color:var(--primary);">Resend OTP</a>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-login" class="btn btn-primary" style="width:100%; justify-content:center;">Send OTP <i class="fa-solid fa-shield"></i></button>
+                    <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
+                        New Patient? <a href="#" onclick="toggleAuthMode('register')" style="color:var(--primary); font-weight:600;">Register Here</a>
+                    </p>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="register-form" class="hidden" onsubmit="handlePatientRegister(event)">
+                    <div class="flex gap-4">
+                        <div class="form-group" style="flex:1;">
+                            <label class="form-label">First Name</label>
+                            <input type="text" id="reg-fname" class="form-control" placeholder="John" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" id="reg-lname" class="form-control" placeholder="Doe" required>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="form-group" style="flex:1;">
+                            <label class="form-label">Age</label>
+                            <input type="number" id="reg-age" class="form-control" placeholder="30" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label class="form-label">Gender</label>
+                            <select id="reg-gender" class="form-control" required>
+                                <option>Male</option><option>Female</option><option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Number</label>
+                        <input type="tel" id="reg-phone" class="form-control" placeholder="+91 99999 00000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Symptoms (AI Routing)</label>
+                        <textarea id="reg-symptoms" class="form-control" placeholder="e.g., Chest pain, Shortness of breath" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Register & Auto-Assign Doctor</button>
+                    <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
+                        Already registered? <a href="#" onclick="toggleAuthMode('login')" style="color:var(--primary); font-weight:600;">Login Here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==============================================
+         MAIN APPLICATION UI
+         ============================================== -->
+    <div id="app-view" class="app-layout hidden">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="glass sidebar">
+            <div class="sidebar-header" style="flex-direction:column; gap:0.5rem; text-align:center;">
+                <i class="fa-solid fa-hospital-user text-primary" style="font-size:2rem;"></i>
+                <h2 style="font-size: 1.3rem;">Nexus HMS</h2>
+                <div class="badge" style="background:rgba(16,185,129,0.1); color:var(--success); border-radius:50px; font-size:0.7rem;">Patient Portal</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard"><i class="fa-solid fa-heart-circle-check"></i> My Health Space</li>
+                <li class="nav-item" onclick="navigate('doctors')" id="nav-doctors"><i class="fa-solid fa-user-doctor"></i> Find a Physician</li>
+                <li class="nav-item" onclick="navigate('book')" id="nav-book"><i class="fa-solid fa-calendar-plus text-primary"></i> Book Appointment</li>
+                <li class="nav-item" onclick="navigate('records')" id="nav-records"><i class="fa-solid fa-file-waveform"></i> Health Records</li>
+                <li class="nav-item" onclick="navigate('payments')" id="nav-payments"><i class="fa-solid fa-credit-card"></i> Billing & Payments</li>
+                <li class="nav-item" onclick="navigate('messages')" id="nav-messages"><i class="fa-solid fa-comments"></i> Messages</li>
+                <li class="nav-item" onclick="navigate('news')" id="nav-news"><i class="fa-solid fa-newspaper"></i> Health Hub</li>
+                <li class="nav-item" onclick="navigate('services')" id="nav-services"><i class="fa-solid fa-concierge-bell text-warning"></i> In-Room Services</li>
+            </ul>
+
+            <div class="user-block">
+                <div class="avatar" id="portal-avatar">P</div>
+                <div class="user-info">
+                    <select id="family-selector" style="background:transparent; border:none; color:var(--text-main); font-weight:600; cursor:pointer;" onchange="switchProfile(this.value)">
+                        <option value="main">My Profile</option>
+                        <option value="f1">Sara (Mother)</option>
+                        <option value="f2">Alex (Son)</option>
+                        <option value="+">+ Add Family</option>
+                    </select>
+                    <p>Verified Elite</p>
+                </div>
+                <i class="fa-solid fa-right-from-bracket text-muted" style="margin-left:auto; cursor:pointer;" onclick="logout()"></i>
+            </div>
+        </aside>
+
+        <!-- MAIN DYNAMIC CONTENT -->
+        <main class="main-content">
+            <!-- TOP HEADER -->
+            <header class="glass topbar">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    <input type="text" placeholder="Search doctors, records, or help...">
+                </div>
+                <div class="actions">
+                    <button class="btn btn-glass" onclick="openModal('modal-ai-symptom-check')"><i class="fa-solid fa-brain text-primary"></i> AI Check</button>
+                    <button class="icon-btn" onclick="toggleChatbot()" title="Open Assistant"><i class="fa-solid fa-robot text-primary"></i></button>
+                    <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge" id="pt-notif-count">3</span></button>
+                    <button class="btn btn-danger" onclick="triggerEmergency()"><i class="fa-solid fa-truck-medical"></i> SOS</button>
+                </div>
+            </header>
+
+            <div class="page-container">
+
+                <!-- 1. DASHBOARD OVERVIEW -->
+                <section id="view-dashboard" class="router-view">
+                    <div class="hero-banner" style="justify-content:space-between; align-items:flex-end;">
+                        <div>
+                            <h2 class="hero-title" id="welcome-text">Good Morning, Patient!</h2>
+                            <p class="text-sm" style="color:white; opacity:0.8; margin-bottom:10px;">Your recovery journey is 65% complete.</p>
+                        </div>
+                        <div class="glass" style="padding:1rem; border-radius:12px; min-width:200px; margin-bottom:10px;">
+                            <div class="flex justify-between mb-1" style="font-size:0.8rem;">
+                                <span>Recovery Progress</span>
+                                <strong>65%</strong>
+                            </div>
+                            <div style="height:8px; background:rgba(255,255,255,0.2); border-radius:4px; overflow:hidden;">
+                                <div style="width:65%; height:100%; background:var(--success); box-shadow:0 0 10px var(--success); transition:2s ease-out;" id="recovery-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; margin-bottom:2rem;">
+                        <div class="glass-card">
+                            <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-calendar-week text-primary"></i> Upcoming Appointments</h3>
+                            <div class="table-wrapper">
+                                <table id="pt-dash-apts">
+                                    <thead><tr><th>Doctor</th><th>Date & Time</th><th>Status</th><th>Action</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-bell text-warning"></i> Notifications</h3>
+                            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:1rem;">
+                                <li style="padding-bottom:1rem; border-bottom:1px solid var(--border-solid);">
+                                    <strong class="text-success">Payment Successful</strong> - Registration Fee (₹500)<br>
+                                    <small class="text-muted">10 mins ago</small>
+                                </li>
+                                <li style="padding-bottom:1rem; border-bottom:1px solid var(--border-solid);">
+                                    <strong class="text-primary">New Prescription</strong> - Dr. Connor uploaded a document.<br>
+                                    <small class="text-muted">2 hours ago</small>
+                                </li>
+                                <li>
+                                    <strong class="text-warning">Reminder</strong> - Fast 12 hrs before blood test.<br>
+                                    <small class="text-muted">Yesterday</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. PHYSICIAN DISCOVERY -->
+                <section id="view-doctors" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-user-doctor text-primary"></i> Find a Physician</h2>
+                        <p class="text-muted">Browse our elite roster of medical specialists.</p>
+                    </div>
+                    <div class="doctor-grid" id="pt-doc-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- 3. ONLINE BOOKING -->
+                <section id="view-book" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-calendar-plus text-success"></i> Schedule an Appointment</h2>
+                        <p class="text-muted">Select an available slot to book instantly.</p>
+                    </div>
+                    <div class="glass-card" style="max-width:800px; margin:0 auto;">
+                        <form onsubmit="handlePtBook(event)">
+                            <div class="form-group">
+                                <label class="form-label">Select Department / Specialist</label>
+                                <select id="pt-book-doc" class="form-control" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Preferred Date</label>
+                                <input type="date" id="pt-book-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Available Time Slots</label>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                                    <label class="btn btn-glass" style="cursor:pointer;"><input type="radio" name="slot" value="09:00 AM" required> 09:00 AM</label>
+                                    <label class="btn btn-glass" style="cursor:pointer;"><input type="radio" name="slot" value="11:30 AM"> 11:30 AM</label>
+                                    <label class="btn btn-glass" style="cursor:pointer;"><input type="radio" name="slot" value="02:00 PM"> 02:00 PM</label>
+                                    <label class="btn btn-glass" style="cursor:pointer;"><input type="radio" name="slot" value="04:45 PM"> 04:45 PM</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1.5rem; justify-content:center;">Confirm Booking</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- 4. HEALTH RECORDS & PRESCRIPTIONS -->
+                <section id="view-records" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-file-waveform text-secondary"></i> Digital Health Record (PHR)</h2>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-timeline text-primary"></i> Health Timeline</h3>
+                            <div style="margin-top:1.5rem; position:relative; border-left:2px solid var(--primary); padding-left:1.5rem; display:flex; flex-direction:column; gap:1.5rem;">
+                                <div style="position:relative;">
+                                    <div style="position:absolute; width:12px; height:12px; background:var(--primary); border-radius:50%; left:-1.95rem; top:5px; box-shadow:0 0 10px var(--primary);"></div>
+                                    <strong class="text-main">Cardiology Consultation</strong><span class="text-muted" style="float:right; font-size:0.85rem;">Mar 20, 2026</span>
+                                    <p class="text-muted" style="font-size:0.9rem; margin-top:0.5rem; margin-bottom:0;">Dr. Sarah Connor - Vitals normal, scheduled EKG.</p>
+                                </div>
+                                <div style="position:relative;">
+                                    <div style="position:absolute; width:12px; height:12px; background:var(--success); border-radius:50%; left:-1.95rem; top:5px;"></div>
+                                    <strong class="text-main">Prescription Refill</strong><span class="text-muted" style="float:right; font-size:0.85rem;">Feb 15, 2026</span>
+                                    <p class="text-muted" style="font-size:0.9rem; margin-top:0.5rem; margin-bottom:0;">Lisinopril 10mg approved for 3 months.</p>
+                                </div>
+                                <div style="position:relative;">
+                                    <div style="position:absolute; width:12px; height:12px; background:var(--warning); border-radius:50%; left:-1.95rem; top:5px;"></div>
+                                    <strong class="text-main">Laboratory Alert</strong><span class="text-muted" style="float:right; font-size:0.85rem;">Jan 10, 2026</span>
+                                    <p class="text-muted" style="font-size:0.9rem; margin-top:0.5rem; margin-bottom:0;">Slightly elevated LDL Cholesterol. Diet adjustment recommended.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card flex flex-col gap-4">
+                            <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Allergies & Tags</h3>
+                            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                                <span class="badge" style="background:rgba(239,68,68,0.1); color:var(--danger); padding:8px 12px;"><i class="fa-solid fa-virus"></i> Penicillin</span>
+                                <span class="badge" style="background:rgba(245,158,11,0.1); color:var(--warning); padding:8px 12px;"><i class="fa-solid fa-leaf"></i> Seasonal Pollen</span>
+                                <span class="badge" style="background:rgba(16,185,129,0.1); color:var(--success); padding:8px 12px;"><i class="fa-solid fa-check"></i> Type B+ Blood</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table id="pt-records-table">
+                                <thead><tr><th>Document</th><th>Doctor</th><th>Date</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Cardiology Report</strong><br><small class="text-muted">Blood Pressure & EKG</small></td>
+                                        <td>Dr. Sarah Connor</td><td>Mar 20, 2026</td>
+                                        <td><button class="btn btn-primary" style="padding:0.4rem 0.8rem;" onclick="downloadPDF()"><i class="fa-solid fa-download"></i> PDF</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Prescription (Lisinopril)</strong><br><small class="text-muted">10mg daily</small></td>
+                                        <td>Dr. James Wilson</td><td>Feb 15, 2026</td>
+                                        <td><button class="btn btn-primary" style="padding:0.4rem 0.8rem;" onclick="downloadPDF()"><i class="fa-solid fa-download"></i> PDF</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. BILLING & PAYMENT GATEWAY -->
+                <section id="view-payments" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-credit-card text-warning"></i> Secure Payment Gateway</h2>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+                        <div class="glass-card">
+                            <h3 style="margin-bottom:1.5rem;">Pending Invoices</h3>
+                            <div style="border:1px solid var(--border-solid); padding:1rem; border-radius:12px; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <strong>Consultation Fee</strong><br>
+                                    <small class="text-muted">Dr. Sarah Connor - Mar 20</small>
+                                </div>
+                                <div style="text-align:right;">
+                                    <strong class="text-danger" style="font-size:1.2rem;">₹1,200</strong><br>
+                                    <span class="badge" style="background:rgba(239,68,68,0.1); color:var(--danger);">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3 style="margin-bottom:1.5rem;">Select Payment Method</h3>
+                            <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.5rem;">
+                                <div class="payment-method selected" onclick="selectPayment(this)">
+                                    <i class="fa-brands fa-cc-visa text-primary" style="font-size:2rem;"></i>
+                                    <div><strong>Credit / Debit Card</strong><br><small class="text-muted">Instant Processing</small></div>
+                                </div>
+                                <div class="payment-method" onclick="selectPayment(this)">
+                                    <i class="fa-solid fa-building-columns text-success" style="font-size:2rem;"></i>
+                                    <div><strong>Net Banking / UPI</strong><br><small class="text-muted">Secure Bank Transfer</small></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="processPayment()"><i class="fa-solid fa-lock"></i> Pay ₹1,200 Securely</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. HYBRID MESSAGES & CHATBOT -->
+                <section id="view-messages" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-comments text-primary"></i> Secure Communications</h2>
+                    </div>
+                    <div class="glass-card" style="display:flex; height:500px; padding:0; overflow:hidden;">
+                        <!-- Inbox -->
+                        <div style="width:300px; border-right:1px solid var(--border-solid); display:flex; flex-direction:column;">
+                            <div style="padding:1rem; border-bottom:1px solid var(--border-solid); font-weight:600;">Conversations</div>
+                            <div style="padding:1rem; background:var(--surface-active); border-left:4px solid var(--primary); cursor:pointer;">
+                                <strong>Dr. Sarah Connor</strong><br>
+                                <small class="text-muted">"Your lab results look great..."</small>
+                            </div>
+                            <div style="padding:1rem; border-bottom:1px solid var(--border-solid); cursor:pointer;">
+                                <strong>Support Staff</strong><br>
+                                <small class="text-muted">"Your appointment is confirmed."</small>
+                            </div>
+                        </div>
+                        <!-- Chat Window -->
+                        <div style="flex:1; display:flex; flex-direction:column; background:var(--surface);">
+                            <div style="padding:1rem; border-bottom:1px solid var(--border-solid); font-weight:600;"><i class="fa-solid fa-user-doctor"></i> Dr. Sarah Connor</div>
+                            <div style="flex:1; padding:1.5rem; overflow-y:auto; display:flex; flex-direction:column; gap:1rem;">
+                                <div class="chat-msg msg-bot">Hello, I've reviewed your latest EKG. Everything looks normal, but continue your medication.</div>
+                                <div class="chat-msg msg-user">Thank you doctor. Do I need a followup?</div>
+                                <div class="chat-msg msg-bot">No, you're cleared for 6 months. Take care!</div>
+                            </div>
+                            <div class="chat-input text-muted text-center flex items-center justify-center p-4">
+                                <em>Messaging is currently read-only to comply with HIPAA regulations.</em>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. HEALTH HUB (NEWS) -->
+                <section id="view-news" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-newspaper text-secondary"></i> Nexus Health Hub</h2>
+                        <p class="text-muted">Curated medical awareness articles and news.</p>
+                    </div>
+                    <div class="news-grid">
+                        <div class="news-card">
+                            <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80" class="news-img">
+                            <div class="news-content">
+                                <h3 style="margin-bottom:0.5rem; font-size:1.1rem;">Top 10 Heart-Healthy Foods</h3>
+                                <p class="text-muted" style="font-size:0.9rem; margin-bottom:1rem;">Discover the best diet to maintain cardiovascular health...</p>
+                                <a href="#" style="color:var(--primary); font-weight:600; text-decoration:none;">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="news-card">
+                            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80" class="news-img">
+                            <div class="news-content">
+                                <h3 style="margin-bottom:0.5rem; font-size:1.1rem;">The Importance of Daily Exercise</h3>
+                                <p class="text-muted" style="font-size:0.9rem; margin-bottom:1rem;">Just 30 minutes a day can dramatically lower your risk of...</p>
+                                <a href="#" style="color:var(--primary); font-weight:600; text-decoration:none;">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="news-card">
+                            <img src="https://images.unsplash.com/photo-1584308666744-24d5e4a8ee17?w=400&q=80" class="news-img">
+                            <div class="news-content">
+                                <h3 style="margin-bottom:0.5rem; font-size:1.1rem;">Advances in Telemetry</h3>
+                                <p class="text-muted" style="font-size:0.9rem; margin-bottom:1rem;">How smart devices are pushing the frontier of remote medical monitoring.</p>
+                                <a href="#" style="color:var(--primary); font-weight:600; text-decoration:none;">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. IN-ROOM SERVICES & DELIVERY -->
+                <section id="view-services" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-concierge-bell text-warning"></i> Smart In-Room Services</h2>
+                        <p class="text-muted">Order premium meals, request amenities, or track deliveries.</p>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-utensils text-primary"></i> Gourmet Dining</h3>
+                            <div class="flex flex-column gap-3 mt-4">
+                                <div class="payment-method">
+                                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop" style="border-radius:8px; width:60px; height:60px;">
+                                    <div style="flex:1;">
+                                        <strong>Garden Fresh Salad</strong><br>
+                                        <small class="text-muted">Keto Friendly • Zero Salt</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary" onclick="orderFood('Salad')">Order</button>
+                                </div>
+                                <div class="payment-method">
+                                    <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=60&h=60&fit=crop" style="border-radius:8px; width:60px; height:60px;">
+                                    <div style="flex:1;">
+                                        <strong>Grilled Salmon</strong><br>
+                                        <small class="text-muted">High Protein • Lean Tech</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary" onclick="orderFood('Salmon')">Order</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-truck-ramp-box text-success"></i> Delivery Tracker</h3>
+                            <div class="mt-4" style="position:relative; padding-left:2rem; border-left:2px dashed var(--border-solid); height:200px; display:flex; flex-direction:column; justify-content:space-between;">
+                                <div style="position:relative;">
+                                    <div style="position:absolute; left:-2.45rem; top:0; width:15px; height:15px; background:var(--success); border-radius:50%;"></div>
+                                    <strong>Out for Delivery</strong><br>
+                                    <small class="text-muted">Premium Meal Kit #902</small>
+                                </div>
+                                <div style="position:relative;">
+                                    <div style="position:absolute; left:-2.45rem; top:0; width:15px; height:15px; background:var(--primary); border-radius:50%;"></div>
+                                    <strong>Preparing</strong><br>
+                                    <small class="text-muted">Fresh Vegetable Juice</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+        <!-- FOOTER -->
+        <footer style="margin-top:4rem; padding-top:2rem; border-top:1px solid var(--border-solid); color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+            <div>&copy; 2026 Nexus Luxury Healthcare. Portions powered by AI.</div>
+            <div class="flex gap-4">
+                <span>Privacy</span>
+                <span>Terms</span>
+                <span>HIPAA Compliant</span>
+            </div>
+        </footer>
+
+        <!-- MODAL: AI SYMPTOM CHECK -->
+        <div class="modal-overlay" id="modal-ai-symptom-check">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-brain text-primary"></i> AI Symptom Diagnosis</h3>
+                    <button class="modal-close" onclick="closeModal('modal-ai-symptom-check')"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div style="padding:1rem;">
+                    <p class="text-sm text-muted mb-4">Describe your symptoms below. Our AI will analyze them and suggest a specialist.</p>
+                    <div class="form-group">
+                        <textarea id="ai-symptom-input" class="form-control" rows="4" placeholder="e.g. I have a persistent cough and mild fever..."></textarea>
+                    </div>
+                    <div id="ai-result" class="hidden glass-card mt-4" style="padding:1rem; border-left:4px solid var(--primary);">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-stethoscope text-primary fa-2x"></i>
+                            <div>
+                                <strong id="ai-suggested-dept">Cardiology</strong><br>
+                                <span class="text-xs text-muted" id="ai-explanation">Based on your symptoms, we recommend consulting a heart specialist.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="runAISymptomCheck()" style="width:100%; justify-content:center; margin-top:1rem;" id="btn-run-ai">Run Analysis</button>
+                </div>
+            </div>
+        </div>
+                        <h4 style="color:var(--text-main); margin-bottom:0.5rem;"><i class="fa-solid fa-heart-pulse text-primary"></i> Patient Portal</h4>
+                        <p style="font-size:0.9rem;">24/7 Secure Medical Access.<br>Maps Location: 123 Health Ave, NY</p>
+                    </div>
+                    <div style="font-size:1.5rem; cursor:pointer;" onclick="showToast('Initializing Maps API...', 'warning')"><i class="fa-solid fa-map-location-dot"></i> Get Directions</div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- VOICE ASSISTANT FAB -->
+    <div id="voice-assistant-fab" onclick="toggleVoiceAssistant()" style="position:fixed; bottom:30px; left:30px; z-index:999; width:60px; height:60px; border-radius:30%; background:var(--primary); box-shadow:0 8px 30px var(--primary-light); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid rgba(255,255,255,0.2);">
+        <i class="fa-solid fa-microphone" style="color:white; font-size:1.5rem;"></i>
+        <div id="voice-waves" style="position:absolute; inset:-5px; border-radius:30%; border:2px solid var(--primary); opacity:0; pointer-events:none;"></div>
+    </div>
+
+    <div id="voice-status-bar" style="position:fixed; bottom:100px; left:30px; background:var(--surface); border:1px solid var(--border-solid); padding:1rem; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); display:none; z-index:998; min-width:250px;">
+        <div class="flex items-center gap-3">
+            <div id="voice-indicator" style="width:10px; height:10px; background:var(--danger); border-radius:50%;"></div>
+            <strong id="voice-text">Listening...</strong>
+        </div>
+        <p class="text-xs text-muted mt-1">Try "Open Records" or "Book appointment"</p>
+    </div>
+
+    <!-- FLOATING CHATBOT WIDGET -->
+    <div id="chatbot-widget">
+        <div class="chat-header">
+            <div><strong><i class="fa-solid fa-robot"></i> Nexus Assistant</strong></div>
+            <button class="icon-btn" onclick="toggleChatbot()" style="color:white; padding:0;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-body" id="cb-body">
+            <div class="chat-msg msg-bot">Hi there! I'm the Nexus AI Helper. I can assist you with booking or basic medical queries.</div>
+        </div>
+        <div class="chat-input" onkeydown="if(event.key === 'Enter') sendChat()">
+            <input type="text" id="cb-input" style="flex:1; border:none; outline:none; background:transparent; color:var(--text-main);" placeholder="Ask me anything...">
+            <button class="icon-btn" onclick="sendChat()" style="color:var(--primary);"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container"></div>
+
+    <script>
+        // ==========================================
+        // STATE AND INITIALIZATION
+        // ==========================================
+        const MemStore = {
+            getItem(key) { return localStorage.getItem(key); },
+            setItem(key, val) { localStorage.setItem(key, val); },
+            removeItem(key) { localStorage.removeItem(key); }
+        };
+
+        let ptUser = JSON.parse(MemStore.getItem('hms_portal_user'));
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (ptUser) {
+                document.getElementById('auth-view').style.display = 'none';
+                document.getElementById('app-view').classList.remove('hidden');
+                bootstrapPortal();
+            }
+        });
+
+        // ==========================================
+        // AUTHENTICATION LOGIC
+        // ==========================================
+        function toggleAuthMode(mode) {
+            const loginF = document.getElementById('login-form');
+            const regF = document.getElementById('register-form');
+            const title = document.getElementById('auth-title');
+            
+            if(mode === 'register') {
+                loginF.classList.add('hidden');
+                regF.classList.remove('hidden');
+                title.innerText = "Patient Registration";
+            } else {
+                loginF.classList.remove('hidden');
+                regF.classList.add('hidden');
+                title.innerText = "Patient Portal Access";
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const otpG = document.getElementById('otp-group');
+            
+            if(otpG.classList.contains('hidden')) {
+                // Simulate sending OTP via SMS
+                showToast("OTP sent to your registered device via SMS System.", "success");
+                btn.innerHTML = 'Verify & Login <i class="fa-solid fa-check"></i>';
+                otpG.classList.remove('hidden');
+            } else {
+                // Simulate Successful Login
+                ptUser = { name: document.getElementById('auth-user').value.split('@')[0], phone: '123' };
+                MemStore.setItem('hms_portal_user', JSON.stringify(ptUser));
+                location.reload();
+            }
+        });
+
+        function handlePatientRegister(e) {
+            e.preventDefault();
+            const fname = document.getElementById('reg-fname').value.trim();
+            const lname = document.getElementById('reg-lname').value.trim();
+            const phone = document.getElementById('reg-phone').value;
+            const age = document.getElementById('reg-age').value;
+            
+            showToast("Registration successful! Proceeding to SMS Verification.", "success");
+            ptUser = { name: `${fname} ${lname}`, phone: phone };
+            
+            // Sync with main admin patients array seamlessly!
+            const pts = JSON.parse(MemStore.getItem('hms_v2_patients') || '[]');
+            
+            // Check if patient already exists (created by admin/staff) to prevent duplicates
+            const existingPt = pts.find(p => p.fname.toLowerCase() === fname.toLowerCase() && p.lname.toLowerCase() === lname.toLowerCase());
+            
+            if (!existingPt) {
+                pts.unshift({ 
+                    patientId: 'PT-' + Math.floor(1000 + Math.random() * 9000), // Enforce native ID for sync
+                    fname, 
+                    lname, 
+                    phone, 
+                    age, 
+                    status: 'Active Treatment', 
+                    disease:'General Consult' 
+                });
+                MemStore.setItem('hms_v2_patients', JSON.stringify(pts));
+            }
+
+            MemStore.setItem('hms_portal_user', JSON.stringify(ptUser));
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        function logout() {
+            MemStore.removeItem('hms_portal_user');
+            location.reload();
+        }
+
+        // ==========================================
+        // PORTAL CORE & NAV
+        // ==========================================
+        function bootstrapPortal() {
+            document.getElementById('portal-name').innerText = ptUser.name;
+            document.getElementById('portal-avatar').innerText = ptUser.name.charAt(0).toUpperCase();
+            document.getElementById('welcome-text').innerText = `Good Morning, ${ptUser.name.split(' ')[0]}!`;
+            
+            navigate('dashboard');
+            populateApts();
+            populateDocDropdown();
+            renderDoctorsGrid();
+            renderHealthRecords();
+            renderBillingItems();
+        }
+
+        window.addEventListener('storage', () => {
+            if(MemStore.getItem('hms_portal_user')) {
+                bootstrapPortal();
+            }
+        });
+
+        function navigate(viewId) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+            document.querySelectorAll('.router-view').forEach(el => el.classList.add('hidden'));
+            
+            const target = document.getElementById(`view-${viewId}`);
+            target.classList.remove('hidden');
+            target.style.opacity = '0';
+            target.style.transform = 'translateY(15px)';
+            setTimeout(() => {
+                target.style.transition = 'all 0.4s ease';
+                target.style.opacity = '1';
+                target.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        // ==========================================
+        // MODULES LOGIC
+        // ==========================================
+        function populateApts() {
+            const tbody = document.querySelector('#pt-dash-apts tbody');
+            const apts = JSON.parse(MemStore.getItem('hms_v2_appointments') || '[]');
+            const myApts = apts.filter(a => a.patient === ptUser.name);
+            
+            if(myApts.length > 0) {
+                tbody.innerHTML = myApts.slice(0,3).map((a, i) => `
+                    <tr>
+                        <td><strong>${a.doctor}</strong></td>
+                        <td>${a.date} at ${a.time}</td>
+                        <td><span class="badge" style="background:rgba(16,185,129,0.1); color:var(--success)">Confirmed</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="openModal('modal-video-call')" style="padding:0.4rem 0.8rem; margin-right:5px;"><i class="fa-solid fa-video"></i> Join</button>
+                            <button class="btn btn-glass" onclick="showToast('Cancellation requested.', 'warning')" style="padding:0.4rem 0.8rem;"><i class="fa-solid fa-xmark text-danger"></i> Cancel</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted" style="padding:2rem;">No upcoming appointments found.</td></tr>`;
+            }
+        }
+
+        function renderDoctorsGrid() {
+            const grid = document.getElementById('pt-doc-grid');
+            const docs = JSON.parse(MemStore.getItem('hms_v2_doctors') || '[]');
+            
+            if(docs.length > 0) {
+                grid.innerHTML = docs.map(d => {
+                    const fallback = `https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&q=80`;
+                    const img = d.photo || fallback;
+                    return `
+                    <div class="doc-card" style="cursor:pointer;" onclick="navigate('book')">
+                        <img src="${img}" class="doc-photo">
+                        <div class="doc-name">${d.name}</div>
+                        <div class="doc-spec text-primary">${d.spec}</div>
+                        <p class="text-muted" style="font-size:0.8rem; margin-top:5px;">10+ Years Experience</p>
+                        <span class="badge" style="margin-top:10px; display:inline-block; background:rgba(16,185,129,0.1); color:var(--success)">${d.status}</span>
+                        <div class="doc-actions" style="margin-top:1rem; border-top:1px solid var(--border-solid); padding-top:1rem;">
+                            <button class="btn btn-primary" style="width:100%;">Book Now</button>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+        }
+
+        function populateDocDropdown() {
+            const sel = document.getElementById('pt-book-doc');
+            const docs = JSON.parse(MemStore.getItem('hms_v2_doctors') || '[]');
+            docs.forEach(d => {
+                sel.innerHTML += `<option value="${d.name}">${d.name} (${d.spec})</option>`;
+            });
+            if(docs.length===0) sel.innerHTML = `<option>General Physician</option>`;
+        }
+
+        function handlePtBook(e) {
+            e.preventDefault();
+            const doctor = document.getElementById('pt-book-doc').value;
+            const date = document.getElementById('pt-book-date').value;
+            const time = document.querySelector('input[name="slot"]:checked')?.value || "10:00 AM";
+
+            const apts = JSON.parse(MemStore.getItem('hms_v2_appointments') || '[]');
+            apts.unshift({ patient: ptUser.name, doctor, date, time, status:'Confirmed' });
+            MemStore.setItem('hms_v2_appointments', JSON.stringify(apts));
+            
+            showToast(`Appointment confirmed with ${doctor}!`, "success");
+            e.target.reset();
+            bootstrapPortal();
+            setTimeout(() => navigate('dashboard'), 1500);
+        }
+
+        function renderHealthRecords() {
+            const tbody = document.querySelector('#pt-records-table tbody');
+            if(!tbody) return;
+            
+            const labs = JSON.parse(MemStore.getItem('hms_v2_labs') || '[]');
+            const prescriptions = JSON.parse(MemStore.getItem('hms_v2_prescriptions') || '[]');
+            
+            const myLabs = labs.filter(l => l.patient === ptUser.name).map(l => ({
+                title: l.test,
+                sub: l.category || 'General Lab',
+                doctor: 'Lab Dept',
+                date: l.date || 'Today',
+                icon: 'fa-vial'
+            }));
+            
+            const myRx = prescriptions.filter(p => p.patient === ptUser.name).map(p => ({
+                title: p.meds,
+                sub: p.id,
+                doctor: p.doctor,
+                date: p.date,
+                icon: 'fa-prescription'
+            }));
+
+            const combined = [...myLabs, ...myRx].sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            if(combined.length > 0) {
+                tbody.innerHTML = combined.map(item => `
+                    <tr>
+                        <td><strong><i class="fa-solid ${item.icon} text-primary"></i> ${item.title}</strong><br><small class="text-muted">${item.sub}</small></td>
+                        <td>${item.doctor}</td>
+                        <td>${item.date}</td>
+                        <td><button class="btn btn-primary" style="padding:0.4rem 0.8rem;" onclick="downloadPDF()"><i class="fa-solid fa-download"></i> PDF</button></td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted" style="padding:2rem;">No medical records or prescriptions found.</td></tr>`;
+            }
+        }
+
+        function renderBillingItems() {
+            const tbody = document.querySelector('#view-payments table tbody');
+            if(!tbody) return;
+
+            const bills = JSON.parse(MemStore.getItem('hms_v2_billing') || '[]');
+            const myBills = bills.filter(b => b.patient === ptUser.name);
+
+            if(myBills.length > 0) {
+                tbody.innerHTML = myBills.map(b => `
+                    <tr>
+                        <td><strong>INV-${b.id || '882'}</strong></td>
+                        <td>${b.date || 'Mar 23'}</td>
+                        <td class="text-secondary">₹${b.amount || b.total || '0'}</td>
+                        <td><span class="badge" style="background:${b.status==='Paid'?'rgba(16,185,129,0.1)':'rgba(245,158,11,0.1)'}; color:${b.status==='Paid'?'var(--success)':'var(--warning)'};">${b.status || 'Pending'}</span></td>
+                    </tr>
+                `).join('');
+
+                // Update Dashboard stats if possible
+                const pending = myBills.filter(b => b.status !== 'Paid');
+                if(pending.length > 0) {
+                    const payBtn = document.querySelector('#view-payments .btn-primary');
+                    if(payBtn) payBtn.innerText = `Pay All Outstanding (₹${pending.reduce((acc, curr) => acc + parseInt(curr.amount || curr.total || 0), 0)})`;
+                }
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted" style="padding:2rem;">No billing history available.</td></tr>`;
+            }
+        }
+
+        // ==========================================
+        // PAYMENTS & OTHERS
+        // ==========================================
+        function selectPayment(el) {
+            document.querySelectorAll('.payment-method').forEach(x => x.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        
+        function processPayment() {
+            showToast("Connecting to Payment Gateway...", "warning");
+            setTimeout(() => {
+                showToast("Payment Successful! ₹1,200 Processed.", "success");
+                setTimeout(()=> navigate('dashboard'), 2000);
+            }, 1500);
+        }
+
+        function downloadPDF() {
+            showToast("Generating Encrypted PDF Document...", "warning");
+            setTimeout(() => showToast("PDF Downloaded Successfully.", "success"), 1500);
+        }
+
+        async function triggerEmergency() {
+            if(confirm("Are you sure you want to dispatch an ambulance to your registered location?")) {
+                try {
+                    await API.nurse.call('Emergency');
+                    showToast("CRITICAL: Emergency Alert Dispatched with GPS Telemetry.", "error");
+                } catch(e) { showToast("Emergency dispatch failed.", "error"); }
+            }
+        }
+
+        // ==========================================
+        // CHATBOT
+        // ==========================================
+        function toggleChatbot() {
+            document.getElementById('chatbot-widget').classList.toggle('active');
+        }
+
+        function sendChat() {
+            const input = document.getElementById('cb-input');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const b = document.getElementById('cb-body');
+            b.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
+            input.value = '';
+            b.scrollTop = b.scrollHeight;
+
+            setTimeout(() => {
+                const replies = [
+                    "I can certainly help you schedule that securely.",
+                    "If this is a medical emergency, please click the red SOS button.",
+                    "Let me check our physician availability for you.",
+                    "Based on your symptoms, I recommend booking an appointment with Dr. Sarah Connor (Cardiology).",
+                    "I see you had a recent lab result. Would you like me to pull up those records?",
+                    "Your prescription for Lisinopril is due for a refill soon. Shall I notify the pharmacy?"
+                ];
+                const reply = replies[Math.floor(Math.random()*replies.length)];
+                b.innerHTML += `<div class="chat-msg msg-bot">${reply}</div>`;
+                b.scrollTop = b.scrollHeight;
+            }, 1000);
+        }
+
+        // ==========================================
+        // PHASE 4: PATIENT EXPERIENCE
+        // ==========================================
+        function switchProfile(val) {
+            if(val === '+') {
+                showToast("Opening 'Add Family Member' verification flow...", "warning");
+                document.getElementById('family-selector').value = 'main';
+                return;
+            }
+            showToast(`Switching to ${val==='main'?'Primary':(val==='f1'?'Sara':'Alex')}'s profile...`, "success");
+            setTimeout(() => {
+                if(val !== 'main') {
+                    document.getElementById('welcome-text').innerText = `Care Mode: ${val==='f1'?'Sara (Mother)':'Alex (Son)'}`;
+                    document.getElementById('recovery-bar').style.width = val==='f1' ? '40%' : '85%';
+                    document.querySelector('.hero-banner p').innerText = `Recovery journey is ${val==='f1'?'40%':'85%'} complete.`;
+                } else {
+                    bootstrapPortal();
+                }
+            }, 800);
+        }
+
+        async function orderFood(item) {
+            try {
+                await API.food.placeOrder(item);
+                showToast(`Order placed: ${item}. Premium kitchen notified.`, "success");
+            } catch(e) {
+                showToast("Food order failed: " + e.message, "error");
+            }
+        }
+
+        // --- PHASE 6: AI SYMPTOM CHECKER ---
+        async function runAISymptomCheck() {
+            const symptoms = document.getElementById('ai-symptom-input').value;
+            if(!symptoms) return showToast("Please describe your symptoms.", "warning");
+            
+            const btn = document.getElementById('btn-run-ai');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI Analyzing...';
+            btn.disabled = true;
+
+            try {
+                // We use the patient registration endpoint logic for routing check
+                const res = await API.patients.create({
+                    fname: "Check", lname: "Only", age: 0, symptoms: symptoms, dry_run: true
+                });
+                
+                document.getElementById('ai-suggested-dept').innerText = res.suggested_specialist || "General Physician";
+                document.getElementById('ai-explanation').innerText = `Algorithm indicates necessity for ${res.suggested_specialist} consultation. Matching doctors now...`;
+                document.getElementById('ai-result').classList.remove('hidden');
+                
+                showToast("AI Analysis Complete", "success");
+            } catch(e) {
+                showToast("AI service unavailable", "error");
+            } finally {
+                btn.innerHTML = 'Run Analysis';
+                btn.disabled = false;
+            }
+        }
+        let isListening = false;
+        function toggleVoiceAssistant() {
+            const bar = document.getElementById('voice-status-bar');
+            const fab = document.getElementById('voice-assistant-fab');
+            const waves = document.getElementById('voice-waves');
+            
+            isListening = !isListening;
+            if(isListening) {
+                bar.style.display = 'block';
+                fab.style.background = 'var(--danger)';
+                if(waves) { waves.style.animation = 'pulse 1.5s infinite'; waves.style.opacity = '1'; }
+                startMockRecognition();
+            } else {
+                bar.style.display = 'none';
+                fab.style.background = 'var(--primary)';
+                if(waves) { waves.style.animation = 'none'; waves.style.opacity = '0'; }
+            }
+        }
+
+        function startMockRecognition() {
+            const status = document.getElementById('voice-text');
+            const indicator = document.getElementById('voice-indicator');
+            const commands = ["Open Records", "Book appointment", "Show messages", "Logout"];
+            
+            setTimeout(() => {
+                if(!isListening) return;
+                if(indicator) indicator.style.background = 'var(--success)';
+                const cmd = commands[Math.floor(Math.random() * commands.length)];
+                if(status) status.innerText = `Recognized: "${cmd}"`;
+                
+                setTimeout(() => {
+                    handleVoiceCommand(cmd);
+                    toggleVoiceAssistant();
+                }, 1500);
+            }, 2000);
+        }
+
+        function handleVoiceCommand(cmd) {
+            const c = cmd.toLowerCase();
+            showToast(`Voice Command: ${cmd}`, 'primary');
+            if(c.includes('records')) navigate('records');
+            else if(c.includes('appointment')) navigate('book');
+            else if(c.includes('messages')) navigate('messages');
+            else if(c.includes('logout')) logout();
+        }
+
+        // reused Toast logic from app.js
+        function showToast(message, type = 'success') {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = 'glass toast';
+            let icon = type==='success'?'fa-check-circle text-success':'fa-triangle-exclamation text-danger';
+            if(type==='warning') icon = 'fa-info-circle text-warning';
+            t.style.borderLeftColor = type==='success'?'var(--success)':(type==='error'?'var(--danger)':'var(--warning)');
+            t.innerHTML = `<i class="fa-solid ${icon}" style="font-size:1.2rem;"></i><div><h4 style="font-size:0.95rem; margin-bottom:2px;">Portal Alert</h4><p style="font-size:0.85rem; margin:0;">${message}</p></div>`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300) }, 3000);
+        }
+    </script>
+    <!-- VIDEO CONSULTATION MODAL -->
+    <div class="modal-overlay" id="modal-video-call">
+        <div class="modal-box" style="max-width: 800px; padding: 0;">
+            <div class="modal-header" style="border-bottom:none; position:absolute; top:0; left:0; right:0; z-index:10; background:linear-gradient(rgba(0,0,0,0.7), transparent); color:white;">
+                <h3 style="color:white;"><i class="fa-solid fa-video text-success"></i> Secure Doctor Link</h3>
+            </div>
+            <div style="position:relative; width: 100%; height: 500px; background: #000; border-radius: 16px; overflow:hidden;">
+                <!-- Main Feed -->
+                <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">
+                
+                <!-- PIP Camera -->
+                <div style="position:absolute; bottom: 80px; right: 20px; width: 150px; height: 100px; background: #333; border: 2px solid white; border-radius: 8px; overflow:hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);">
+                     <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&q=80" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+
+                <!-- Call Controls -->
+                <div style="position:absolute; bottom:0; left:0; right:0; height:70px; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); display:flex; justify-content:center; align-items:center; gap: 1.5rem;">
+                    <button class="btn" style="background:rgba(255,255,255,0.2); color:white; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center;" onclick="this.querySelector('i').classList.toggle('fa-microphone-slash'); this.querySelector('i').classList.toggle('text-danger');"><i class="fa-solid fa-microphone"></i></button>
+                    <button class="btn" style="background:rgba(255,255,255,0.2); color:white; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center;" onclick="this.querySelector('i').classList.toggle('fa-video-slash'); this.querySelector('i').classList.toggle('text-danger');"><i class="fa-solid fa-video"></i></button>
+                    <button class="btn btn-danger" style="border-radius:50px; padding: 0.8rem 2rem;" onclick="closeModal('modal-video-call');"><i class="fa-solid fa-phone-slash"></i> Leave Session</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

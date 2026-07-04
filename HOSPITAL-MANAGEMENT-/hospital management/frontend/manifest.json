@@ -1,0 +1,21 @@
+{
+  "name": "Luxury HMS - Enterprise Healthcare",
+  "short_name": "Luxury HMS",
+  "description": "Professional Hospital Management System",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#5c67f2",
+  "icons": [
+    {
+      "src": "assets/hospital_interior.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/hospital_interior.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

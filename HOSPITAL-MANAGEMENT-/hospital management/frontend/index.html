@@ -1,0 +1,3217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo Healthcare | Enterprise Medical Management</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Premium Stylesheet -->
+    <link rel="stylesheet" href="css/luxury.css">
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</head>
+
+
+<body>
+
+    <!-- PRELOADER -->
+    <div class="loader-overlay" id="main-loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container"></div>
+
+    <!-- ==============================================
+         LANDING EXPERIENCE ("Apple Level")
+         ============================================== -->
+    <div id="landing-view" class="landing-hero">
+        <div class="landing-overlay"></div>
+        <nav class="landing-nav">
+            <div class="landing-brand"><i class="fa-solid fa-hospital"></i> Apollo Healthcare</div>
+        </nav>
+        <div class="landing-content">
+            <h1>Enterprise Clinical<br>Excellence System</h1>
+            <p>Empowering the world's most advanced healthcare facilities with seamless data integration and AI-driven
+                clinical workflows.</p>
+            <div class="landing-actions">
+                <button class="btn btn-primary" onclick="showLoginScreen()"
+                    style="padding: 1rem 2rem; font-size:1.1rem; border-radius: 50px;">
+                    Portal Login <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left:8px;"></i>
+                </button>
+                <button class="btn btn-glass" onclick="openRegistrationModal()"
+                    style="padding: 1rem 2rem; font-size:1.1rem; border-radius: 50px; color:white; border: 1px solid rgba(255,255,255,0.3);">
+                    Create Account <i class="fa-solid fa-user-plus" style="margin-left:8px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         AUTHENTICATION PORTAL (Premium Split Layout)
+         ============================================== -->
+    <div id="auth-view" class="auth-wrapper hidden">
+        <div class="login-split-container">
+            <!-- Left Side: Branding & Visuals -->
+            <div class="login-left">
+                <div class="login-left-bg" id="login-bg-image"></div>
+                <div class="login-left-overlay"></div>
+                <div class="login-left-content">
+                    <div class="landing-brand" style="margin-bottom: 2rem; font-size: 2rem;">
+                        <i class="fa-solid fa-hospital"></i>
+                        <span id="login-hospital-name">Apollo Healthcare</span>
+                    </div>
+                    <h1>Digital Health<br>Redefined.</h1>
+                    <p>Access the world's most advanced healthcare management suite. Secure, seamless, and
+                        patient-centric.</p>
+                    <div class="flex gap-4">
+                        <div class="glass-card" style="padding: 1rem; flex: 1; text-align: center;">
+                            <h4 style="color: white;">99.9%</h4>
+                            <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">Uptime</p>
+                        </div>
+                        <div class="glass-card" style="padding: 1rem; flex: 1; text-align: center;">
+                            <h4 style="color: white;">ISO</h4>
+                            <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">Certified</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Login Form -->
+            <div class="login-right">
+                <div class="login-card-premium">
+                    <div class="login-header">
+                        <i class="fa-solid fa-hospital auth-logo-premium" style="color:var(--primary)"></i>
+                        <h2 style="margin-bottom: 0.5rem;">Welcome Back</h2>
+                        <p>Please select your role and authenticate</p>
+                    </div>
+
+                    <div class="role-grid">
+                        <div class="role-chip active" data-auth-role="admin" onclick="selectAuthRole('admin')">Admin
+                        </div>
+                        <div class="role-chip" data-auth-role="doctor" onclick="selectAuthRole('doctor')">Doctor</div>
+                        <div class="role-chip" data-auth-role="nurse" onclick="selectAuthRole('nurse')">Nurse</div>
+                        <div class="role-chip" data-auth-role="receptionist" onclick="selectAuthRole('receptionist')">
+                            Receptionist</div>
+                        <div class="role-chip" data-auth-role="pharmacist" onclick="selectAuthRole('pharmacist')">
+                            Pharmacist</div>
+                        <div class="role-chip" data-auth-role="lab-tech" onclick="selectAuthRole('lab-tech')">Lab Tech
+                        </div>
+                        <div class="role-chip" data-auth-role="billing" onclick="selectAuthRole('billing')">Billing
+                        </div>
+                        <div class="role-chip" data-auth-role="patient" onclick="selectAuthRole('patient')">Patient
+                        </div>
+                    </div>
+
+                    <form id="login-form">
+                        <div class="premium-input-group">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <input type="text" id="auth-username" class="premium-control" placeholder="Phone or Email"
+                                required>
+                        </div>
+
+                        <div id="password-field-container" class="premium-input-group">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="auth-password" class="premium-control"
+                                placeholder="Password (Optional for Demo)">
+                            <i class="fa-solid fa-eye-slash toggle-password"
+                                onclick="togglePasswordVisibility('auth-password', this)"></i>
+                        </div>
+
+                        <div id="auth-otp-group" class="hidden">
+                            <p
+                                style="font-size: 0.85rem; margin-bottom: 1rem; text-align: center; color: var(--text-muted);">
+                                Verification code sent to your device</p>
+                            <div class="otp-display-group">
+                                <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 'otp-2')">
+                                <input type="text" id="otp-2" maxlength="1" class="otp-box"
+                                    onkeyup="moveOtpFocus(this, 'otp-3')">
+                                <input type="text" id="otp-3" maxlength="1" class="otp-box"
+                                    onkeyup="moveOtpFocus(this, 'otp-4')">
+                                <input type="text" id="otp-4" maxlength="1" class="otp-box"
+                                    onkeyup="moveOtpFocus(this, 'otp-5')">
+                                <input type="text" id="otp-5" maxlength="1" class="otp-box"
+                                    onkeyup="moveOtpFocus(this, 'otp-6')">
+                                <input type="text" id="otp-6" maxlength="1" class="otp-box" onkeyup="finalizeOtp(this)">
+                                <input type="hidden" id="auth-otp">
+                            </div>
+                            <div class="flex justify-between"
+                                style="font-size: 0.8rem; margin-top: 1rem; padding: 0 0.5rem;">
+                                <span id="otp-timer">Expires in: 01:00</span>
+                                <a href="#" onclick="resendOTP()"
+                                    style="color: var(--primary); font-weight: 600; text-decoration: none;">Resend <i
+                                        class="fa-solid fa-rotate-right"></i></a>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; justify-content: center; padding: 1.2rem; border-radius: 18px; font-size: 1.1rem; margin-top: 1rem;"
+                            id="btn-login-submit">
+                            Secure Login <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left: 8px;"></i>
+                        </button>
+
+                        <div class="login-footer-links">
+                            <label class="checkbox-container">
+                                <input type="checkbox" checked>
+                                <span>Remember Me</span>
+                            </label>
+                            <a href="#" style="color: var(--primary); font-weight: 600; text-decoration: none;">Forgot?</a>
+                            <a href="#" onclick="openRegistrationModal()" style="color: var(--success); font-weight: 600; text-decoration: none; margin-left:1rem;">Create Account</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==============================================
+         MAIN APPLICATION UI
+         ============================================== -->
+    <div id="app-view" class="app-layout hidden">
+
+        <!-- LUXURY SIDEBAR -->
+        <aside class="glass sidebar" id="app-sidebar">
+            <div class="sidebar-header" style="flex-direction: column; gap: 0.5rem;">
+                <img id="display-hospital-img" src=""
+                    style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; display: none;">
+                <i id="display-hospital-logo" class="fa-solid fa-hospital-user"
+                    style="color: var(--primary); font-size: 2rem;"></i>
+                <h2 id="display-hospital-name" style="font-size: 1.3rem;">Nexus HMS</h2>
+            </div>
+
+            <ul class="sidebar-menu" id="nav-menu">
+                <!-- Dynamically Populated by Role -->
+            </ul>
+
+            <!-- Current User Profile Block -->
+            <div class="user-block">
+                <div class="avatar" id="nav-avatar">A</div>
+                <div class="user-info">
+                    <h4 id="nav-user-name">Dr. Loading</h4>
+                    <p id="nav-user-role">SuperAdmin</p>
+                </div>
+                <i class="fa-solid fa-right-from-bracket three-dots" onclick="logout()" title="Logout"
+                    style="margin-left: auto;"></i>
+            </div>
+        </aside>
+
+        <!-- MAIN DYNAMIC CONTENT -->
+        <main class="main-content">
+            <!-- TOP HEADER -->
+            <header class="glass topbar">
+                <div class="flex items-center gap-4" style="position:relative;">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                        <input type="text" id="global-search-input" placeholder="Search Patients by Name or ID..."
+                            oninput="handleGlobalSearch(this.value)">
+                    </div>
+                    <!-- Live Search Results -->
+                    <div id="search-results-dropdown" class="glass-card hidden"
+                        style="position:absolute; top:100%; left:0; width:400px; z-index:1000; margin-top:0.5rem; max-height:400px; overflow-y:auto; padding:0;">
+                        <!-- Results go here -->
+                    </div>
+                </div>
+
+                <div class="sync-status"
+                    style="margin-left: 2rem; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+                    <button id="sync-status-btn" class="btn btn-glass btn-sm" onclick="simulateSync()"
+                        style="color: var(--success); border-color: rgba(16,185,129,0.2);">
+                        <i class="fa-solid fa-cloud-check"></i> Cloud Synced
+                    </button>
+                    <span class="text-xs text-muted" id="last-sync-time">Last: Just now</span>
+                </div>
+
+                <div class="actions">
+                    <a href="patient-portal.html" class="btn btn-primary"
+                        style="text-decoration:none; margin-right: 1rem;" title="View Patient Portal" target="_blank">
+                        <i class="fa-solid fa-users-viewfinder"></i> View Patient Portal
+                    </a>
+                    <button class="icon-btn" onclick="toggleThemePanel()" title="Customize Theme">
+                        <i class="fa-solid fa-palette"></i>
+                    </button>
+                    <button class="icon-btn" onclick="toggleDarkMode()" title="Dark Mode Toggle">
+                        <i class="fa-solid fa-moon" id="dark-mode-icon"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge" id="notification-badge">5</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE PAGE CONTAINER -->
+            <div class="page-container" id="page-router">
+
+                <!-- 0. ADMIN DASHBOARD (EXECUTIVE) -->
+                <section id="view-admin-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/admin_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Executive Control Center</h1>
+                            <p>Real-time analytics and hospital-wide operations management.</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon"><i class="fa-solid fa-bed-pulse"></i></div>
+                            <div class="stat-details">
+                                <h3 id="admin-stat-patients">...</h3>
+                                <p>Total Patients</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--secondary); background: rgba(0,210,211,0.1);"><i
+                                    class="fa-solid fa-user-doctor"></i></div>
+                            <div class="stat-details">
+                                <h3 id="admin-stat-doctors">...</h3>
+                                <p>Active Doctors</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--success); background: rgba(16,185,129,0.1);"><i
+                                    class="fa-solid fa-calendar-check"></i></div>
+                            <div class="stat-details">
+                                <h3 id="admin-stat-appointments">...</h3>
+                                <p>Scheduled Appts</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--warning); background: rgba(245,158,11,0.1);"><i
+                                    class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="stat-details">
+                                <h3 id="admin-stat-revenue">₹0</h3>
+                                <p>Total Revenue</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--primary); background: rgba(92,103,242,0.1);"><i
+                                    class="fa-solid fa-bed"></i></div>
+                            <div class="stat-details">
+                                <h3 id="admin-stat-beds">...</h3>
+                                <p>Available Beds</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--success); background: rgba(16,185,129,0.1);"><i
+                                    class="fa-solid fa-user-check"></i></div>
+                            <div class="stat-details">
+                                <h3 id="admin-stat-docs-online">...</h3>
+                                <p>Doctors Available</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-chart-line text-primary"></i> Operational Overview</h3>
+                            <canvas id="admin-revenue-chart" style="max-height: 250px;"></canvas>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-bolt text-warning"></i> Quick Operations</h3>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-add-patient')"><i
+                                        class="fa-solid fa-user-plus"></i> Register Patient</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-add-doctor')"><i
+                                        class="fa-solid fa-user-doctor"></i> Add Staff</button>
+                                <button class="btn btn-glass"
+                                    onclick="openModal('modal-manage-staff'); renderStaffList();"><i
+                                        class="fa-solid fa-users-gear"></i> Manage Staff</button>
+                                <button class="btn btn-glass"
+                                    onclick="openModal('modal-inventory-alerts'); renderInventoryAlerts();"><i
+                                        class="fa-solid fa-triangle-exclamation"></i> Stock Alerts</button>
+                                <button class="btn btn-glass" onclick="exportSystemData()"
+                                    style="color: var(--primary); border-color: var(--primary);"><i
+                                        class="fa-solid fa-download"></i> System Backup</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-ai-analytics')"><i
+                                        class="fa-solid fa-brain"></i> AI Insights</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-hospital-heatmap')"><i
+                                        class="fa-solid fa-map-location-dot"></i> Live Heatmap</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 1. DOCTOR DASHBOARD (CLINICAL) -->
+                <section id="view-doc-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/doctor_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Clinical Workstation</h1>
+                            <div class="flex items-center gap-4 mt-2">
+                                <p>Welcome back, Doctor. Manage your consultations and patient care.</p>
+                                <div class="flex gap-2 items-center" style="margin-left:auto; background:rgba(255,255,255,0.1); padding:0.5rem 1rem; border-radius:30px; border:1px solid rgba(255,255,255,0.2);">
+                                    <span class="text-xs text-secondary-light">MY STATUS:</span>
+                                    <select id="doc-my-status" class="form-control" style="width:auto; height:30px; padding:0 10px; font-size:0.8rem; background:transparent; color:white; border-color:rgba(255,255,255,0.3);" onchange="handleDocStatusChange(this.value)">
+                                        <option value="Available" style="color:black">Available</option>
+                                        <option value="In Consultation" style="color:black">In Consultation</option>
+                                        <option value="In Operation" style="color:black">In Operation</option>
+                                        <option value="Offline" style="color:black">Offline</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i
+                                    class="fa-solid fa-calendar-day"></i></div>
+                            <div class="stat-details">
+                                <h3 id="doc-stat-today">0</h3>
+                                <p>Today's Appointments</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i
+                                    class="fa-solid fa-user-injured"></i></div>
+                            <div class="stat-details">
+                                <h3 id="doc-stat-patients">0</h3>
+                                <p>Active Patients</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;"><i
+                                    class="fa-solid fa-clipboard-list"></i></div>
+                            <div class="stat-details">
+                                <h3 id="doc-stat-pending">0</h3>
+                                <p>Pending Consults</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" id="doc-burnout-icon"
+                                style="background:rgba(16,185,129,0.1); color:#10b981;"><i class="fa-solid fa-leaf"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="doc-stat-burnout">Low</h3>
+                                <p>Burnout Risk</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-clock text-primary"></i> Upcoming Schedule</h3>
+                            <div class="table-wrapper mt-4">
+                                <table class="data-table" id="doc-tbl-schedule">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Patient</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-wand-magic-sparkles text-success"></i> Clinical Actions</h3>
+                            <div class="flex flex-column gap-3 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-add-prescription')"><i
+                                        class="fa-solid fa-signature"></i> Write New Prescription</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-create-report')"><i
+                                        class="fa-solid fa-microscope"></i> Request Laboratory Test</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-schedule-telemedicine')"><i
+                                        class="fa-solid fa-video"></i> Start Tele-Consult</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. NURSE DASHBOARD (STATION) -->
+                <section id="view-nurse-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/nurse_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Nursing Care Station</h1>
+                            <p>Monitor vitals, manage ward status, and coordinate patient care.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i
+                                    class="fa-solid fa-bed-pulse"></i></div>
+                            <div class="stat-details">
+                                <h3 id="nurse-stat-monitored">0</h3>
+                                <p>Assigned Patients</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;"><i
+                                    class="fa-solid fa-temperature-full"></i></div>
+                            <div class="stat-details">
+                                <h3 id="nurse-stat-vitals">0</h3>
+                                <p>Daily Vitals Pending</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b;"><i
+                                    class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div class="stat-details">
+                                <h3 id="nurse-stat-rounds">8:00 AM</h3>
+                                <p>Next Ward Round</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3><i class="fa-solid fa-bed text-primary"></i> Ward / Bed Occupancy</h3>
+                                <div class="flex gap-2">
+                                    <span class="badge" style="background:rgba(239,68,68,0.1); color:var(--danger)">3
+                                        Nurse Calls</span>
+                                    <button class="btn btn-glass btn-sm" onclick="navigate('beds')">View All</button>
+                                </div>
+                            </div>
+                            <div id="nurse-ward-summary" class="flex flex-column gap-3">
+                                <!-- Dynamic Bed Summary -->
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-comments-medical text-success"></i> Shift Handover & Sync</h3>
+                            <div id="nurse-handover-notes" class="flex flex-column gap-3 mt-4"
+                                style="max-height: 250px; overflow-y: auto;">
+                                <!-- Dynamic Handover -->
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <input type="text" id="handover-note-input" class="form-control"
+                                    placeholder="Add urgent handover note..." style="flex:1;">
+                                <button class="btn btn-primary" onclick="addHandoverNote()"><i
+                                        class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card mt-8">
+                        <h3><i class="fa-solid fa-heart-pulse text-danger"></i> Clinical Care Hub</h3>
+                        <div class="flex flex-wrap gap-3 mt-4">
+                            <button class="btn btn-primary" onclick="openModal('modal-add-vitals'); renderVitalsPtSelect();"><i class="fa-solid fa-plus"></i> Record Patient Vitals</button>
+                            <button class="btn btn-glass" onclick="openModal('modal-staff-roster'); renderStaffRoster();"><i class="fa-solid fa-calendar-alt"></i> View Duty Roster</button>
+                            <button class="btn btn-glass" onclick="openModal('modal-inventory-alerts'); renderInventoryAlerts();"><i class="fa-solid fa-triangle-exclamation"></i> Check Stock Alerts</button>
+                            <button class="btn btn-glass" onclick="openModal('modal-hospital-heatmap')"><i class="fa-solid fa-map-location-dot"></i> Ward Map</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. RECEPTIONIST DASHBOARD (FRONT DESK) -->
+                <section id="view-receptionist-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/receptionist_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Patient Care Coordination</h1>
+                            <p>Fast registration, scheduling, and information center.</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon"><i class="fa-solid fa-user-plus"></i></div>
+                            <div class="stat-details">
+                                <h3 id="recep-stat-new">0</h3>
+                                <p>New Reg. Today</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--success);"><i
+                                    class="fa-solid fa-calendar-plus"></i></div>
+                            <div class="stat-details">
+                                <h3 id="recep-stat-apts">0</h3>
+                                <p>Today's Bookings</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--primary);"><i
+                                    class="fa-solid fa-handshake-angle"></i></div>
+                            <div class="stat-details">
+                                <h3 id="recep-stat-q">0</h3>
+                                <p>Waiting Queue</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-users text-primary"></i> Recent Registrations</h3>
+                            <div class="table-wrapper mt-4">
+                                <table class="data-table" id="recep-tbl-recent">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>ID</th>
+                                            <th>Service</th>
+                                            <th>Act</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-bolt text-warning"></i> Front-Desk Operations</h3>
+                            <div class="flex flex-column gap-3 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-add-patient')"><i
+                                        class="fa-solid fa-user-plus"></i> New Patient Registration</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-quick-action')"><i
+                                        class="fa-solid fa-calendar-check"></i> Book Appointment</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-request-ambulance')"><i
+                                        class="fa-solid fa-truck-medical text-danger"></i> Dispatch Emergency
+                                    SOS</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-patient-profile" class="router-view hidden">
+                    <div class="page-header" style="justify-content: flex-start; gap: 1rem;">
+                        <button class="btn btn-glass" onclick="navigate('patients')"><i
+                                class="fa-solid fa-arrow-left"></i> Back</button>
+                        <h2 id="profile-pt-name">Patient Profile</h2>
+                        <span class="badge" id="profile-pt-id"
+                            style="background:var(--primary); color:white;">PT-0000</span>
+                        <div id="profile-qr-container" style="margin-left:auto; cursor:pointer; text-align:center;"
+                            onclick="showToast('Staff Digital ID Verified', 'success')">
+                            <div id="staff-qr-display" style="width:60px; height:60px; background:#eee; border-radius:4px; display:flex; align-items:center; justify-content:center; margin-bottom:4px;">
+                                <i class="fa-solid fa-qrcode"></i>
+                            </div>
+                            <span class="text-xs text-muted">SCAN ID</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-4 gap-4 mb-8">
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">Active Appointments</div>
+                            <div class="stat-value" id="profile-stat-apts">0</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">Total Billing (INR)</div>
+                            <div class="stat-value text-success" id="profile-stat-billing">₹0</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">Lab Reports</div>
+                            <div class="stat-value text-primary" id="profile-stat-labs">0</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">Pending Actions</div>
+                            <div class="stat-value text-warning" id="profile-stat-actions">None</div>
+                        </div>
+                    </div>
+
+                    <!-- Digital Twin & Advanced Analytics -->
+                    <div class="glass-card mb-8"
+                        style="background: linear-gradient(135deg, rgba(30,58,138,0.1), rgba(0,210,211,0.05)); border: 1px solid rgba(92,103,242,0.2);">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3><i class="fa-solid fa-dna text-primary"></i> Digital Twin: Predictive Health Modeling
+                            </h3>
+                            <button class="btn btn-glass btn-sm" onclick="showAIDecisionSupport()"><i
+                                    class="fa-solid fa-robot"></i> Run AI Triage</button>
+                        </div>
+                        <div class="grid grid-2 gap-8 items-center">
+                            <div style="text-align:center; position:relative;">
+                                <!-- Simple Body Map SVG placeholder -->
+                                <i class="fa-solid fa-person"
+                                    style="font-size: 8rem; color: var(--primary-light); opacity: 0.5;"></i>
+                                <div id="digital-twin-risks"
+                                    style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:100%;">
+                                    <!-- Dynamic Risk Points -->
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="mb-3">Predictive Health Score</h4>
+                                <div id="health-prediction-list" class="flex flex-column gap-3">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <!-- Left Col: Appointments & Prescriptions -->
+                        <div class="flex flex-column gap-6">
+                            <div class="glass-card">
+                                <h3><i class="fa-solid fa-calendar-check text-success"></i> Appointment History</h3>
+                                <div class="table-wrapper" style="margin-top:1rem;">
+                                    <table class="data-table" id="profile-tbl-apts">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Doctor</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="glass-card">
+                                <h3><i class="fa-solid fa-prescription text-primary"></i> Current Prescriptions</h3>
+                                <div id="profile-prescriptions" class="flex flex-column gap-3 mt-4">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Col: Billing & Labs -->
+                        <div class="flex flex-column gap-6">
+                            <div class="glass-card">
+                                <h3><i class="fa-solid fa-file-invoice-dollar text-warning"></i> Financial Records</h3>
+                                <div class="table-wrapper" style="margin-top:1rem;">
+                                    <table class="data-table" id="profile-tbl-billing">
+                                        <thead>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <th>Service</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="glass-card">
+                                <h3><i class="fa-solid fa-microscope text-primary"></i> Laboratory Diagnostics</h3>
+                                <div id="profile-labs" class="flex flex-column gap-3 mt-4">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. PATIENT DASHBOARD (PERSONAL HEALTH SPACE) -->
+                <section id="view-patient-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/patient_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Your Personal Health Space</h1>
+                            <p>Manage your health records, appointments, and prescriptions in one place.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-4 gap-4 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--primary);"><i
+                                    class="fa-solid fa-calendar-check"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pt-stat-apts">0</h3>
+                                <p>My Appointments</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--success);"><i
+                                    class="fa-solid fa-prescription"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pt-stat-meds">0</h3>
+                                <p>Active Meds</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--warning);"><i
+                                    class="fa-solid fa-file-medical"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pt-stat-reports">0</h3>
+                                <p>Lab Reports</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="color:var(--danger);"><i
+                                    class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pt-stat-bill">₹0</h3>
+                                <p>Outstanding</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-heart-pulse text-danger"></i> Health Timeline</h3>
+                            <div class="flex flex-column gap-3 mt-4" id="pt-health-timeline">
+                                <div class="timeline-item">
+                                    <span class="badge"
+                                        style="background:var(--success); color:white; position:static;">Today</span>
+                                    <p>Welcome to your personal health portal.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-ellipsis-vertical text-muted"></i> Self Services</h3>
+                            <div class="grid grid-3 gap-3 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-quick-action')"><i class="fa-solid fa-calendar-plus"></i> Book Appt</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-medication-refill')"><i class="fa-solid fa-prescription-bottle-medical"></i> Refill Meds</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-track-medicine'); trackMedicine();"><i class="fa-solid fa-truck-fast"></i> Track Meds</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-order-food')"><i class="fa-solid fa-utensils"></i> Order Food</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-health-records')"><i class="fa-solid fa-file-pdf"></i> Records</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-schedule-telemedicine')"><i class="fa-solid fa-headset"></i> Telehealth</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-emergency-contacts'); renderEmergencyContacts();"><i class="fa-solid fa-address-book"></i> Contacts</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-feedback')"><i class="fa-solid fa-comments"></i> Feedback</button>
+                                <button class="btn btn-glass" onclick="triggerNurseCall()" style="color:var(--warning); border-color:var(--warning);"><i class="fa-solid fa-user-nurse"></i> Call Nurse</button>
+                                <button class="btn btn-glass" onclick="triggerNurseCall('Emergency')" style="color:var(--danger); border-color:var(--danger); grid-column: span 3;"><i class="fa-solid fa-triangle-exclamation"></i> EMERGENCY HELP</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8 mt-8">
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-clock-rotate-left text-primary"></i> Food Order History</h3>
+                            <div class="table-wrapper mt-4">
+                                <table class="data-table" id="pt-tbl-food">
+                                    <thead><tr><th>Time</th><th>Order</th><th>Status</th><th>Action</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-bell text-warning"></i> Active Nurse Calls</h3>
+                            <div id="pt-nurse-calls" class="flex flex-column gap-2 mt-4">
+                                <!-- Dynamic -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 2. PATIENT MANAGEMENT -->
+                <section id="view-patients" class="router-view hidden">
+                    <div
+                        style="width:100%; height:180px; border-radius:16px; margin-bottom:2rem; background: url('https://images.unsplash.com/photo-1516549655169-df83a0774514?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; display:flex; align-items:flex-end; padding:2rem; position:relative; overflow:hidden;">
+                        <div
+                            style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.9), transparent);">
+                        </div>
+                        <h2 style="color:white; position:relative; z-index:10; font-size:2rem; margin:0;"><i
+                                class="fa-solid fa-hospital-user text-secondary"></i> Patient Directory</h2>
+                    </div>
+                    <div class="page-header">
+                        <p style="color:var(--text-muted);">Manage and monitor active treatments and historical records.
+                        </p>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-patient')"><i
+                                class="fa-solid fa-plus"></i> Register Patient</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table id="tbl-patients">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Disease</th>
+                                        <th>Status</th>
+                                        <th>Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody><!-- Populated dynamically --></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. DOCTOR MANAGEMENT -->
+                <section id="view-doctors" class="router-view hidden">
+                    <div
+                        style="width:100%; height:180px; border-radius:16px; margin-bottom:2rem; background: url('https://images.unsplash.com/photo-1551076805-e1869043e560?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; display:flex; align-items:flex-end; padding:2rem; position:relative; overflow:hidden;">
+                        <div
+                            style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.9), transparent);">
+                        </div>
+                        <h2 style="color:white; position:relative; z-index:10; font-size:2rem; margin:0;"><i
+                                class="fa-solid fa-user-doctor" style="color:var(--primary-light)"></i> Medical Staff
+                        </h2>
+                    </div>
+                    <div class="page-header">
+                        <p style="color:var(--text-muted);">Coordinate specialist availability and staff profiles.</p>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-doctor')"><i
+                                class="fa-solid fa-user-doctor"></i> Add Doctor</button>
+                    </div>
+                    <!-- Apple Product CSS Grid Style -->
+                    <div class="doctor-grid" id="doctor-grid-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- 4. PHARMACIST DASHBOARD (INVENTORY) -->
+                <section id="view-pharmacist-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/pharmacist_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Pharmacy & Stock Management</h1>
+                            <p>Prescription fulfillment, inventory tracking, and procurement.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i
+                                    class="fa-solid fa-pills"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pharma-stat-items">0</h3>
+                                <p>Total Medicines</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;"><i
+                                    class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pharma-stat-low">0</h3>
+                                <p>Low Stock Alerts</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i
+                                    class="fa-solid fa-truck-ramp-box"></i></div>
+                            <div class="stat-details">
+                                <h3 id="pharma-stat-dispensed">0</h3>
+                                <p>Dispensed Today</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <div class="flex justify-between items-center">
+                                <h3><i class="fa-solid fa-list-check text-primary"></i> Inventory Overview</h3>
+                                <button class="btn btn-glass btn-sm" onclick="navigate('pharmacy')">View All</button>
+                            </div>
+                            <div class="table-wrapper mt-4">
+                                <table class="data-table" id="pharma-tbl-summary">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Category</th>
+                                            <th>Stock</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-cart-shopping text-success"></i> Pharmacy Operations</h3>
+                            <div class="flex flex-column gap-3 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-add-medicine')"><i
+                                        class="fa-solid fa-plus"></i> Add Medication to Stock</button>
+                                <button class="btn btn-glass"
+                                    onclick="openModal('modal-fulfill-prescription'); renderPendingFulfillment();"><i
+                                        class="fa-solid fa-id-card-clip"></i> Fulfill Prescriptions</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-inventory-alerts')"><i
+                                        class="fa-solid fa-file-export"></i> Inventory Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. APPOINTMENTS (GENERIC) -->
+                <section id="view-appointments" class="router-view hidden">
+                <div
+                    style="width:100%; height:180px; border-radius:16px; margin-bottom:2rem; background: url('https://images.unsplash.com/photo-1551601651-2a8555f1a136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; display:flex; align-items:flex-end; padding:2rem; position:relative; overflow:hidden;">
+                    <div
+                        style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.9), transparent);">
+                    </div>
+                    <h2 style="color:white; position:relative; z-index:10; font-size:2rem; margin:0;"><i
+                            class="fa-solid fa-calendar-check text-warning"></i> Scheduling Engine</h2>
+                </div>
+                <div class="page-header">
+                    <p style="color:var(--text-muted);">Real-time booking and calendar management.</p>
+                    <button class="btn btn-primary" onclick="openModal('modal-quick-action')"><i
+                            class="fa-solid fa-calendar-plus"></i> Book Appointment</button>
+                </div>
+                <div class="glass-card">
+                    <div class="table-wrapper">
+                        <table id="tbl-appointments">
+                            <thead>
+                                <tr>
+                                    <th>Apt ID</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                    <th>Act</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                </section>
+
+                <!-- 5. PHARMACY MANAGEMENT -->
+                <section id="view-pharmacy" class="router-view hidden">
+                    <div class="page-header">
+                        <h2>Pharmacy & Stock Inventory</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-medicine')"><i
+                                class="fa-solid fa-pills"></i> Add Medication</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table id="tbl-pharmacy">
+                                <thead>
+                                    <tr>
+                                        <th>Batch ID</th>
+                                        <th>Medicine Name</th>
+                                        <th>Category</th>
+                                        <th>Stock</th>
+                                        <th>Expiry Date</th>
+                                        <th>Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. LAB TECHNICIAN DASHBOARD (DIAGNOSTICS) -->
+                <section id="view-lab-tech-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/lab_tech_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Laboratory Diagnostics Hub</h1>
+                            <p>Diagnostic testing, sample processing, and report generation.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(92,103,242,0.1); color:#5c67f2;"><i
+                                    class="fa-solid fa-vial"></i></div>
+                            <div class="stat-details">
+                                <h3 id="lab-stat-tests">0</h3>
+                                <p>Active Test Requests</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b;"><i
+                                    class="fa-solid fa-microscope"></i></div>
+                            <div class="stat-details">
+                                <h3 id="lab-stat-processing">0</h3>
+                                <p>In Processing</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i
+                                    class="fa-solid fa-file-circle-check"></i></div>
+                            <div class="stat-details">
+                                <h3 id="lab-stat-completed">0</h3>
+                                <p>Reports Finalized</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <div class="flex justify-between items-center">
+                                <h3><i class="fa-solid fa-clipboard-check text-primary"></i> Pending Diagnostics</h3>
+                                <button class="btn btn-glass btn-sm" onclick="navigate('laboratory')">Full Log</button>
+                            </div>
+                            <div class="table-wrapper mt-4">
+                                <table class="data-table" id="lab-tbl-summary">
+                                    <thead>
+                                        <tr>
+                                            <th>Test ID</th>
+                                            <th>Patient</th>
+                                            <th>Type</th>
+                                            <th>Act</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-flask-vial text-success"></i> Laboratory Operations</h3>
+                            <div class="flex flex-column gap-3 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-create-report')"><i
+                                        class="fa-solid fa-notes-medical"></i> Generate New Lab Report</button>
+                                <button class="btn btn-glass"
+                                    onclick="openModal('modal-sample-tracking'); renderSampleTracking();"><i
+                                        class="fa-solid fa-dropper"></i> Sample Tracking</button>
+                                <button class="btn btn-glass"
+                                    onclick="showToast('Calibration successful.', 'success')"><i
+                                        class="fa-solid fa-screwdriver-wrench"></i> Equipment Calibration</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. LABORATORY TESTS (GENERIC) -->
+                <section id="view-laboratory" class="router-view hidden">
+                    <div class="page-header">
+                        <h2>Laboratory Diagnostics</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-create-report')"><i
+                                class="fa-solid fa-microscope"></i> New Report</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table id="tbl-labs">
+                                <thead>
+                                    <tr>
+                                        <th>Report ID</th>
+                                        <th>Patient Name</th>
+                                        <th>Test Type</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. BILLING STAFF DASHBOARD (FINANCE) -->
+                <section id="view-billing-dashboard" class="router-view hidden">
+                    <div class="role-banner"
+                        style="background-image: url('assets/billing_banner.png');">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h1>Finance & Revenue Cycle</h1>
+                            <p>Manage invoicing, insurance claims, and hospital revenue metrics.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b;"><i
+                                    class="fa-solid fa-file-invoice-dollar"></i></div>
+                            <div class="stat-details">
+                                <h3 id="bill-stat-pending">0</h3>
+                                <p>Unpaid Invoices</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i
+                                    class="fa-solid fa-money-check-dollar"></i></div>
+                            <div class="stat-details">
+                                <h3 id="bill-stat-daily">₹0</h3>
+                                <p>Received Today</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon" style="background:rgba(92,103,242,0.1); color:#5c67f2;"><i
+                                    class="fa-solid fa-shield-heart"></i></div>
+                            <div class="stat-details">
+                                <h3 id="bill-stat-claims">0</h3>
+                                <p>Insurance Claims</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2 gap-8">
+                        <div class="glass-card">
+                            <div class="flex justify-between items-center">
+                                <h3><i class="fa-solid fa-indian-rupee-sign text-primary"></i> Recent Invoices</h3>
+                                <button class="btn btn-glass btn-sm" onclick="navigate('billing')">Financial
+                                    Log</button>
+                            </div>
+                            <div class="table-wrapper mt-4">
+                                <table class="data-table" id="bill-tbl-summary">
+                                    <thead>
+                                        <tr>
+                                            <th>Inv ID</th>
+                                            <th>Patient</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <h3><i class="fa-solid fa-gears text-success"></i> Billing Operations</h3>
+                            <div class="flex flex-column gap-3 mt-4">
+                                <button class="btn btn-primary" onclick="openModal('modal-generate-invoice')"><i
+                                        class="fa-solid fa-file-circle-plus"></i> Create New Billing Invoice</button>
+                                <button class="btn btn-glass" onclick="openModal('modal-insurance')"><i
+                                        class="fa-solid fa-shield-halved"></i> Process Insurance Claim</button>
+                                <button class="btn btn-glass" onclick="showToast('Tally reports synced.', 'success')"><i
+                                        class="fa-solid fa-file-export"></i> Export Financial Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. FINANCE & BILLING (GENERIC) -->
+                <section id="view-billing" class="router-view hidden">
+                    <div class="page-header">
+                        <h2>Finance & Invoicing</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-generate-invoice')"><i
+                                class="fa-solid fa-file-invoice-dollar"></i> Generate Invoice</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table id="tbl-billing">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice ID</th>
+                                        <th>Patient</th>
+                                        <th>Service</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Act</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. PATIENT ROLE: PRESCRIPTIONS -->
+                <section id="view-prescriptions" class="router-view hidden">
+                    <div class="page-header">
+                        <h2>My Prescriptions</h2>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>RX Code</th>
+                                        <th>Doctor</th>
+                                        <th>Medication Details</th>
+                                        <th>Issued</th>
+                                        <th>Refill</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>RX-542</strong></td>
+                                        <td>Dr. Sarah Connor</td>
+                                        <td>Lisinopril (10mg) - 1 per day</td>
+                                        <td>Last week</td>
+                                        <td><button class="btn btn-glass" style="padding:4px 8px; font-size:0.75rem;"
+                                                onclick="showToast('Refill requested!')">Request Refill</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 9. AMBULANCE & LOGISTICS -->
+                <section id="view-ambulance" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-truck-medical text-danger"></i> Ambulance Dispatch & Tracking</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-request-ambulance')"><i
+                                class="fa-solid fa-plus"></i> Manual Dispatch</button>
+                    </div>
+
+                    <div class="grid grid-3 gap-4 mb-8">
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps mb-2">Active Requests</div>
+                            <div class="stat-value" id="stat-amb-active">0</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps mb-2">Available Fleet</div>
+                            <div class="stat-value text-success">12</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps mb-2">Avg. Response Time</div>
+                            <div class="stat-value text-primary">8.4 min</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="tbl-ambulance">
+                                <thead>
+                                    <tr>
+                                        <th>Request ID</th>
+                                        <th>Patient / Location</th>
+                                        <th>Driver</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. MEDICAL EQUIPMENT -->
+                <section id="view-equipment" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-microchip text-primary"></i> Medical Equipment Inventory</h2>
+                        <button class="btn btn-glass" onclick="openModal('modal-add-equipment')"><i
+                                class="fa-solid fa-plus"></i> Add Asset</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="tbl-equipment">
+                                <thead>
+                                    <tr>
+                                        <th>Asset Name</th>
+                                        <th>Category</th>
+                                        <th>Serial No.</th>
+                                        <th>Status</th>
+                                        <th>Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. STAFF SHIFTS -->
+                <section id="view-shifts" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-clock-rotate-left text-primary"></i> Staff Duty Roster</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-shift')"><i
+                                class="fa-solid fa-calendar-plus"></i> Assign Shift</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="tbl-shifts">
+                                <thead>
+                                    <tr>
+                                        <th>Staff Member</th>
+                                        <th>Role</th>
+                                        <th>Shift Type</th>
+                                        <th>Timing</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. BED MANAGEMENT -->
+                <section id="view-beds" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-bed text-primary"></i> Bed & Ward Management</h2>
+                        <div class="flex gap-2">
+                            <button class="btn btn-primary" onclick="openModal('modal-add-room')"><i
+                                    class="fa-solid fa-plus"></i> Add Ward/Room</button>
+                            <button class="btn btn-glass" onclick="openModal('modal-add-bed')"><i
+                                    class="fa-solid fa-plus"></i> Add New Bed</button>
+                        </div>
+                    </div>
+
+                    <!-- Bed Stats -->
+                    <div class="grid grid-4 gap-4 mb-8">
+                        <div class="glass-card flex items-center gap-4">
+                            <div class="stat-icon" style="background:rgba(92,103,242,0.1); color:var(--primary)"><i
+                                    class="fa-solid fa-hospital"></i></div>
+                            <div>
+                                <div class="text-muted text-sm">Total Beds</div>
+                                <div class="stat-value" id="stat-total-beds">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card flex items-center gap-4">
+                            <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:var(--success)"><i
+                                    class="fa-solid fa-check-circle"></i></div>
+                            <div>
+                                <div class="text-muted text-sm">Available</div>
+                                <div class="stat-value" id="stat-avail-beds">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card flex items-center gap-4">
+                            <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:var(--danger)"><i
+                                    class="fa-solid fa-user-injured"></i></div>
+                            <div>
+                                <div class="text-muted text-sm">Occupied</div>
+                                <div class="stat-value" id="stat-occ-beds">0</div>
+                            </div>
+                        </div>
+                        <div class="glass-card flex items-center gap-4">
+                            <div class="stat-icon" style="background:rgba(245,158,11,0.1); color:var(--warning)"><i
+                                    class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div>
+                                <div class="text-muted text-sm">Cleaning</div>
+                                <div class="stat-value" id="stat-cleaning-beds">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ward-container" style="display:flex; flex-direction:column; gap:2rem;">
+                        <!-- Dynamic Ward Grids -->
+                    </div>
+                </section>
+
+                <!-- 13. SYSTEM SETTINGS & BRANDING -->
+                <section id="view-settings" class="router-view hidden mt-4">
+                    <div
+                        style="width:100%; height:180px; border-radius:16px; margin-bottom:2rem; background: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; display:flex; align-items:flex-end; padding:2rem; position:relative; overflow:hidden;">
+                        <div
+                            style="position:absolute; inset:0; background:linear-gradient(to top, rgba(15,23,42,0.9), transparent);">
+                        </div>
+                        <h2 style="color:white; position:relative; z-index:10; font-size:2rem; margin:0;"><i
+                                class="fa-solid fa-gears text-primary"></i> System Customization</h2>
+                    </div>
+                    <div class="page-header">
+                        <p style="color:var(--text-muted);">Configure enterprise branding, visuals, and hospital
+                            parameters.</p>
+                        <button class="btn btn-primary" onclick="saveSettings()"><i class="fa-solid fa-floppy-disk"></i>
+                            Save & Apply Globally</button>
+                    </div>
+
+                    <div class="glass-card flex flex-column gap-6 mb-8">
+                        <div>
+                            <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-image text-primary"></i> Hospital
+                                Branding</h3>
+                            <div class="flex gap-4 items-center">
+                                <div id="preview-settings-logo"
+                                    style="width:100px; height:100px; border-radius:12px; border:2px dashed var(--border-solid); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                                    <i class="fa-solid fa-hospital fa-2x text-muted"></i>
+                                </div>
+                                <div class="flex flex-column gap-2" style="flex:1;">
+                                    <label class="form-label">Upload Custom Header Logo</label>
+                                    <input type="file" id="setting-logo-upload" class="form-control" accept="image/*"
+                                        onchange="previewSettingsLogo(event)" style="padding:0.5rem;">
+                                    <input type="hidden" id="setting-logo-base64">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border:none; border-top:1px dashed var(--border-solid);">
+
+                        <div class="grid grid-2 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">Hospital Name</label>
+                                <input type="text" id="setting-hosp-name" class="form-control"
+                                    placeholder="e.g. Nexus Care Center">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Headquarters Address</label>
+                                <input type="text" id="setting-hosp-address" class="form-control"
+                                    placeholder="123 Wellness Blvd, City">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Primary Theme Color (Hex)</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="setting-color-primary" class="form-control"
+                                        style="width:60px; padding:0; height:45px;" value="#5c67f2"
+                                        oninput="document.getElementById('setting-color-hex').value = this.value">
+                                    <input type="text" id="setting-color-hex" class="form-control" placeholder="#5c67f2"
+                                        oninput="document.getElementById('setting-color-primary').value = this.value">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Contact Phone</label>
+                                <input type="text" id="setting-hosp-phone" class="form-control"
+                                    placeholder="+1-800-HOSPITAL">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11. SALARY MANAGEMENT SECTION -->
+                <section id="view-salaries" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-money-bill-transfer text-success"></i> Payroll Center</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-salary')"><i class="fa-solid fa-plus"></i> Process Payroll</button>
+                    </div>
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="stat-details">
+                                <h3 id="salary-stat-monthly">₹0</h3>
+                                <p>Monthly Payroll</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon text-warning"><i class="fa-solid fa-clock"></i></div>
+                            <div class="stat-details">
+                                <h3 id="salary-stat-pending">0</h3>
+                                <p>Pending Payments</p>
+                            </div>
+                        </div>
+                        <div class="glass-card stat-box">
+                            <div class="stat-icon text-success"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="stat-details">
+                                <h3 id="salary-stat-last">Never</h3>
+                                <p>Last Disbursal</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Staff Payroll Records</h3>
+                        <div class="table-wrapper mt-4">
+                            <table class="data-table" id="salary-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff ID</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Salary (₹)</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12. MEDICAL ASSETS SECTION -->
+                <section id="view-assets" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-microchip text-primary"></i> Medical Inventory</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-asset')"><i class="fa-solid fa-plus"></i> Add Equipment</button>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="asset-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset ID</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Serial NO</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 13. AMBULANCE FLEET SECTION -->
+                <section id="view-ambulance-fleet" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-truck-medical text-danger"></i> Ambulance Fleet Management</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-ambulance')"><i class="fa-solid fa-plus"></i> Register Vehicle</button>
+                    </div>
+                    <div class="grid grid-3 gap-6 mb-8">
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">Active Fleet</div>
+                            <div class="stat-value" id="amb-stat-total">0</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">Available Now</div>
+                            <div class="stat-value text-success" id="amb-stat-avail">0</div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="text-muted text-sm caps">On Emergency</div>
+                            <div class="stat-value text-danger" id="amb-stat-busy">0</div>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="ambulance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Plate NO</th>
+                                        <th>Type</th>
+                                        <th>Driver</th>
+                                        <th>Insurance</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 14. LAB ROOMS SECTION -->
+                <section id="view-lab-rooms" class="router-view hidden">
+                    <div class="page-header">
+                        <h2><i class="fa-solid fa-door-open text-primary"></i> Laboratory Room Management</h2>
+                        <button class="btn btn-primary" onclick="openModal('modal-add-lab-room')"><i class="fa-solid fa-plus"></i> Add Lab Room</button>
+                    </div>
+                    <div class="grid grid-4 gap-6" id="lab-rooms-grid">
+                        <!-- Lab Room Cards -->
+                    </div>
+                </section>
+
+                <!-- LUXURY FOOTER -->
+                <footer
+                    style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-solid); color: var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <h4 style="color:var(--text-main); margin-bottom:0.5rem;"><i
+                                class="fa-solid fa-heart-pulse text-primary"></i> Luxury Care Systems</h4>
+                        <p style="font-size:0.9rem;">24/7 Premium Medical Support. <br>1-800-LUX-CARE |
+                            support@luxurycare.com</p>
+                    </div>
+                    <div style="display:flex; gap:1.5rem; font-size:1.5rem;">
+                        <i class="fa-brands fa-apple" style="cursor:pointer; transition:0.3s;"
+                            onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color=''"></i>
+                        <i class="fa-brands fa-twitter" style="cursor:pointer; transition:0.3s;"
+                            onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color=''"></i>
+                        <i class="fa-brands fa-linkedin" style="cursor:pointer; transition:0.3s;"
+                            onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color=''"></i>
+                    </div>
+                </footer>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ==============================================
+         DYNAMIC MODALS FOR CRUD OPERATIONS
+         ============================================== -->
+
+    <!-- ADD PRESCRIPTION MODAL -->
+    <div class="modal-overlay" id="modal-add-prescription">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Write Prescription</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-prescription')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSavePrescription(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Assigned Patient</label>
+                    <select id="rx-patient" class="form-control dynamic-patient-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Diagnosis / Condition</label>
+                    <input type="text" id="rx-diagnosis" class="form-control" placeholder="e.g. Acute Pharyngitis"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Medications & Dosages (One per line)</label>
+                    <textarea id="rx-meds" class="form-control"
+                        placeholder="1. Amoxicillin 500mg - 1 tab TID for 7 days&#10;2. Paracetamol 500mg - 1 tab PRN for fever"
+                        rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Additional Doctor's Notes (Visible to Patient)</label>
+                    <textarea id="rx-notes" class="form-control" placeholder="Drink plenty of fluids. Rest for 3 days."
+                        rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;"><i
+                        class="fa-solid fa-signature"></i> Finalize Prescription & Sync</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD PATIENT MODAL -->
+    <div class="modal-overlay" id="modal-add-patient">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Register New Patient</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-patient')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRegisterPatient(event)">
+                <div class="form-group" style="margin-bottom: 1.5rem; text-align:center;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--surface); border: 2px dashed var(--border-solid); margin: 0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"
+                        id="pt-preview">
+                        <i class="fa-solid fa-user text-muted fa-2x"></i>
+                    </div>
+                    <label class="btn btn-glass" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; cursor:pointer;">
+                        Upload Patient Photo
+                        <input type="file" id="pt-photo-upload" accept="image/*" style="display:none;"
+                            onchange="previewPatientPhoto(event)">
+                    </label>
+                    <input type="hidden" id="pt-photo-base64">
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">First Name</label>
+                        <input type="text" id="pt-fname" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" id="pt-lname" class="form-control" required>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Age</label>
+                        <input type="number" id="pt-age" class="form-control" placeholder="e.g. 34" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Status</label>
+                        <select id="pt-status" class="form-control" required>
+                            <option value="Active">Active Treatment</option>
+                            <option value="Recovered">Recovered</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Disease / Condition</label>
+                    <input type="text" id="pt-disease" class="form-control" placeholder="e.g. Hypertension" required>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;">Complete Registration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD WARD / ROOM MODAL -->
+    <div class="modal-overlay" id="modal-add-room">
+        <div class="modal-box">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>Add New Ward / Room Type</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-room')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddWard(event)">
+                <div class="form-group">
+                    <label class="form-label">Ward Name / Type</label>
+                    <input type="text" id="ward-name" class="form-control" placeholder="e.g. ICU, General Ward B"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="ward-desc" class="form-control" placeholder="Optional details..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;">Create Ward</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD NEW BED MODAL -->
+    <div class="modal-overlay" id="modal-add-bed">
+        <div class="modal-box">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>Add New Hospital Bed</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-bed')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddBed(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Ward</label>
+                    <select id="bed-ward-select" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bed Number / ID</label>
+                    <input type="text" id="bed-number" class="form-control" placeholder="e.g. B-101" required>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;">Register Bed</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ALLOCATE BED MODAL -->
+    <div class="modal-overlay" id="modal-allocate-bed">
+        <div class="modal-box">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>Allocate Bed to Patient</h3>
+                <button class="modal-close" onclick="closeModal('modal-allocate-bed')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAllocateBed(event)">
+                <input type="hidden" id="allocate-bed-id">
+                <div class="form-group">
+                    <label class="form-label">Bed ID</label>
+                    <input type="text" id="display-bed-id" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Search Patient</label>
+                    <select id="allocate-pt-select" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="allocate-status" class="form-control">
+                        <option value="Occupied">Occupied 🔴</option>
+                        <option value="Reserved">Reserved 🟡</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn btn-primary" style="flex:2; justify-content: center;">Confirm
+                        Allocation</button>
+                    <button type="button" class="btn btn-glass" style="flex:1;"
+                        onclick="handleSmartAllocateBed(document.getElementById('allocate-pt-select').value, 'Normal')"><i
+                            class="fa-solid fa-robot"></i> AI Auto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BOOK APPOINTMENT / QUICK ACTION MODAL -->
+    <div class="modal-overlay" id="modal-quick-action">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Book New Appointment</h3>
+                <button class="modal-close" onclick="closeModal('modal-quick-action')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleBookAppointment(event)">
+                <div class="form-group">
+                    <label class="form-label">Patient Contact or ID</label>
+                    <select id="apt-patient" class="form-control dynamic-patient-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign Doctor</label>
+                    <select id="apt-doctor" class="form-control" required>
+                        <option value="Dr. Sarah Connor">Dr. Sarah Connor (Cardiology)</option>
+                        <option value="Dr. James Wilson">Dr. James Wilson (Neurology)</option>
+                    </select>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="apt-date" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Time</label>
+                        <input type="time" id="apt-time" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;"><i
+                        class="fa-solid fa-calendar-check"></i> Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- NEW MODALS FOR FULL CRUD -->
+    <!-- ADD DOCTOR MODAL -->
+    <div class="modal-overlay" id="modal-add-doctor">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Register New Doctor</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-doctor')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRegisterDoctor(event)">
+                <div class="form-group" style="margin-bottom: 1.5rem; text-align:center;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--surface); border: 2px dashed var(--border-solid); margin: 0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"
+                        id="doc-preview">
+                        <i class="fa-solid fa-camera" style="color:var(--text-muted)"></i>
+                    </div>
+                    <label class="btn btn-glass" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; cursor:pointer;">
+                        Upload Photo
+                        <input type="file" id="doc-photo-upload" accept="image/*" style="display:none;"
+                            onchange="previewDoctorPhoto(event)">
+                    </label>
+                    <input type="hidden" id="doc-photo-base64">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Doctor Name</label>
+                    <input type="text" id="doc-name" class="form-control" placeholder="Dr. John Doe" required>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Specialty</label>
+                        <input type="text" id="doc-spec" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Phone</label>
+                        <input type="text" id="doc-phone" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; margin-top: 1rem; justify-content: center;">Add Staff</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD MEDICINE MODAL -->
+    <div class="modal-overlay" id="modal-add-medicine">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Add Medication to Stock</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-medicine')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRegisterMedicine(event)">
+                <div class="form-group">
+                    <label class="form-label">Medicine Name</label>
+                    <input type="text" id="med-name" class="form-control" required>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Category</label>
+                        <input type="text" id="med-cat" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Stock Units</label>
+                        <input type="number" id="med-stock" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; margin-top: 1rem; justify-content: center;">Update Pharmacy</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- REQUEST AMBULANCE MODAL -->
+    <div class="modal-overlay" id="modal-request-ambulance">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Dispatch Ambulance</h3>
+                <button class="modal-close" onclick="closeModal('modal-request-ambulance')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRequestAmbulance(event)">
+                <div class="form-group">
+                    <label class="form-label">Patient Name / Location</label>
+                    <select id="amb-patient" class="form-control dynamic-patient-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign Driver</label>
+                    <select id="amb-driver" class="form-control">
+                        <option value="Rajesh Kumar">Rajesh Kumar</option>
+                        <option value="Amit Singh">Amit Singh</option>
+                        <option value="Suresh Rainan">Suresh Rainan</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem; background: var(--danger);">Dispatch
+                    Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD EQUIPMENT MODAL -->
+    <div class="modal-overlay" id="modal-add-equipment">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Add Medical Asset</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-equipment')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddEquipment(event)">
+                <div class="form-group">
+                    <label class="form-label">Equipment Name</label>
+                    <input type="text" id="eq-name" class="form-control" placeholder="e.g. Ventilator V1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select id="eq-cat" class="form-control">
+                        <option value="Life Support">Life Support</option>
+                        <option value="Diagnostics">Diagnostics</option>
+                        <option value="Surgical">Surgical</option>
+                        <option value="Mobility">Mobility</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Serial Number</label>
+                    <input type="text" id="eq-serial" class="form-control" placeholder="SN-XXXXX" required>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;">Register Asset</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ASSIGN SHIFT MODAL -->
+    <div class="modal-overlay" id="modal-add-shift">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Assign Staff Shift</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-shift')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddShift(event)">
+                <div class="form-group">
+                    <label class="form-label">Staff Member Name</label>
+                    <input type="text" id="sh-name" class="form-control" placeholder="Search Staff..." required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Shift Type</label>
+                    <select id="sh-type" class="form-control">
+                        <option value="Morning">Morning (08:00 - 16:00)</option>
+                        <option value="Evening">Evening (16:00 - 00:00)</option>
+                        <option value="Night">Night (00:00 - 08:00)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;">Assign Duty</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CREATE LAB REPORT MODAL -->
+    <div class="modal-overlay" id="modal-create-report">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Generate Lab Report</h3>
+                <button class="modal-close" onclick="closeModal('modal-create-report')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleCreateReport(event)">
+                <div class="form-group">
+                    <label class="form-label">Patient Name</label>
+                    <select id="lab-patient" class="form-control dynamic-patient-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Test Type</label>
+                    <input type="text" id="lab-test" class="form-control" placeholder="e.g., Blood Panel, X-Ray"
+                        required>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; margin-top: 1rem; justify-content: center;">Submit to Lab</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- GENERATE INVOICE MODAL -->
+    <div class="modal-overlay" id="modal-generate-invoice">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Generate Billing Invoice</h3>
+                <button class="modal-close" onclick="closeModal('modal-generate-invoice')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleGenerateInvoice(event)">
+                <div class="form-group">
+                    <label class="form-label">Patient Name</label>
+                    <select id="inv-patient" class="form-control dynamic-patient-select"
+                        onchange="handleBillingPatientChange(this.value)" required></select>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Patient ID</label>
+                        <input type="text" id="inv-pt-id" class="form-control" placeholder="Autofilled..." readonly>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Assigned Doctor</label>
+                        <input type="text" id="inv-doctor" class="form-control" placeholder="Autofilled..." readonly>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label" style="font-size:0.8rem">Consultation (₹)</label>
+                        <input type="number" id="inv-consult" class="form-control inv-calc" value="1000"
+                            oninput="calcTotal()" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label" style="font-size:0.8rem">Lab Charges (₹)</label>
+                        <input type="number" id="inv-lab" class="form-control inv-calc" value="0" oninput="calcTotal()"
+                            required>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label" style="font-size:0.8rem">Medicines (₹)</label>
+                        <input type="number" id="inv-meds" class="form-control inv-calc" value="0" oninput="calcTotal()"
+                            required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label" style="font-size:0.8rem">Taxes (%)</label>
+                        <input type="number" id="inv-tax" class="form-control inv-calc" value="18" oninput="calcTotal()"
+                            required>
+                    </div>
+                </div>
+                <div class="form-group"
+                    style="text-align:right; border-top:1px solid var(--border-solid); padding-top:1rem; margin-top:1rem;">
+                    <h3 style="color:var(--text-main);">Total: ₹<span id="inv-total-display">1180.00</span></h3>
+                    <input type="hidden" id="inv-amount" value="1180">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; justify-content: center;"><i class="fa-solid fa-file-invoice"></i> Generate Invoice</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOD ORDER MODAL -->
+    <div class="modal-overlay" id="modal-order-food">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-utensils text-primary"></i> Order Premium Meal</h3>
+                <button class="modal-close" onclick="closeModal('modal-order-food')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleFoodOrder(event)">
+                <div class="form-group">
+                    <label class="form-label">Meal Type</label>
+                    <select id="food-meal-type" class="form-control" required>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snacks">Evening Snacks</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dietary Restriction</label>
+                    <div class="flex gap-2 flex-wrap">
+                        <label class="btn btn-glass btn-sm"><input type="radio" name="diet" value="Normal" checked> Normal</label>
+                        <label class="btn btn-glass btn-sm"><input type="radio" name="diet" value="Diabetic"> Diabetic</label>
+                        <label class="btn btn-glass btn-sm"><input type="radio" name="diet" value="Low Salt"> Low Salt</label>
+                        <label class="btn btn-glass btn-sm"><input type="radio" name="diet" value="Keto"> Keto</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Items</label>
+                    <div class="grid grid-2 gap-2" style="font-size:0.85rem;">
+                        <label><input type="checkbox" name="food-item" value="Grilled Salmon"> Grilled Salmon</label>
+                        <label><input type="checkbox" name="food-item" value="Garden Salad"> Garden Salad</label>
+                        <label><input type="checkbox" name="food-item" value="Oatmeal"> Oatmeal</label>
+                        <label><input type="checkbox" name="food-item" value="Fresh Fruit Bowl"> Fruit Bowl</label>
+                        <label><input type="checkbox" name="food-item" value="Vegetable Soup"> Veg Soup</label>
+                        <label><input type="checkbox" name="food-item" value="Green Tea"> Green Tea</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">Confirm Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MEDICINE TRACKING MODAL -->
+    <div class="modal-overlay" id="modal-track-medicine">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-truck-fast text-success"></i> Medication Tracker</h3>
+                <button class="modal-close" onclick="closeModal('modal-track-medicine')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="medicine-tracking-content" style="padding:1rem;">
+                <div class="tracking-stepper">
+                    <div class="step active" id="track-step-1">
+                        <div class="step-icon"><i class="fa-solid fa-box-archive"></i></div>
+                        <div class="step-label">Packed</div>
+                    </div>
+                    <div class="step" id="track-step-2">
+                        <div class="step-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                        <div class="step-label">Out for Delivery</div>
+                    </div>
+                    <div class="step" id="track-step-3">
+                        <div class="step-icon"><i class="fa-solid fa-house-chimney-medical"></i></div>
+                        <div class="step-label">Delivered</div>
+                    </div>
+                </div>
+                <div class="glass-card mt-6" style="padding:1rem; text-align:center;">
+                    <p id="track-status-text" class="text-muted">Preparing your prescription...</p>
+                    <strong id="track-medicine-name" class="text-primary" style="font-size:1.2rem;">Medication Name</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+    </div>
+
+    <!-- PRINT INVOICE MODAL -->
+    <div class="modal-overlay" id="modal-view-invoice">
+        <div class="modal-box" style="max-width: 600px; background:white; color:black; border-radius:4px;">
+            <div id="print-invoice-area" style="padding: 2rem;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #EEE; padding-bottom:1rem; margin-bottom:1rem;">
+                    <div>
+                        <img src="" id="print-hs-logo" style="max-height:50px; display:none; margin-bottom:10px;">
+                        <h2 id="print-hs-name" style="margin:0; font-size:1.5rem; color:#333;">Luxury Hospital</h2>
+                        <p id="print-hs-address" style="margin:0; font-size:0.85rem; color:#666;">123 Medical Drive, NY
+                            10001</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <h1 style="margin:0; color:#10b981; font-size:2rem;">INVOICE</h1>
+                        <p style="margin:0; font-weight:bold;" id="print-inv-id">INV-1090</p>
+                        <p style="margin:0; font-size:0.85rem; color:#666;" id="print-inv-date">Mar 20, 2026</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:2rem;">
+                    <p style="margin:0; color:#666; font-size:0.85rem;">Bill To:</p>
+                    <h3 style="margin:0; color:#333;" id="print-inv-patient">Emily Blunt</h3>
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; margin-bottom:2rem;">
+                    <thead style="background:#f8f9fa;">
+                        <tr>
+                            <td style="padding:10px; border-bottom:2px solid #EEE; font-weight:bold; color:black;">
+                                Description</td>
+                            <td
+                                style="padding:10px; border-bottom:2px solid #EEE; font-weight:bold; text-align:right; color:black;">
+                                Amount</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding:10px; border-bottom:1px solid #EEE; color:black;">Consultation Services
+                            </td>
+                            <td id="print-inv-consult"
+                                style="padding:10px; border-bottom:1px solid #EEE; text-align:right; color:black;">
+                                ₹1,000.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; border-bottom:1px solid #EEE; color:black;">Laboratory Tests</td>
+                            <td id="print-inv-lab"
+                                style="padding:10px; border-bottom:1px solid #EEE; text-align:right; color:black;">₹0.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; border-bottom:1px solid #EEE; color:black;">Pharmacy / Medicines
+                            </td>
+                            <td id="print-inv-meds"
+                                style="padding:10px; border-bottom:1px solid #EEE; text-align:right; color:black;">₹0.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px; border-bottom:1px solid #EEE; color:black;">Taxes</td>
+                            <td id="print-inv-tax"
+                                style="padding:10px; border-bottom:1px solid #EEE; text-align:right; color:black;">
+                                ₹180.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="display:flex; justify-content:flex-end;">
+                    <div style="width:250px;">
+                        <div
+                            style="display:flex; justify-content:space-between; padding:5px 0; border-top:2px solid #333; font-weight:bold; font-size:1.2rem; color:black;">
+                            <span>Total (INR):</span><span id="print-inv-total" style="color:#10b981;">₹1,180.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display:flex; gap:10px; padding:1.5rem; background:#f8f9fa; border-top:1px solid #EEE; border-radius: 0 0 4px 4px;">
+                <button class="btn" style="flex:1; background:#ef4444; color:white; justify-content:center;"
+                    onclick="closeModal('modal-view-invoice')">Close</button>
+                <button class="btn btn-primary" style="flex:2; justify-content:center;" onclick="printInvoice()"><i
+                        class="fa-solid fa-print"></i> Print / Save PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI INSIGHTS MODAL -->
+    <div class="modal-overlay" id="modal-ai-analytics">
+        <div class="modal-box" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-brain text-primary"></i> AI Operational Insights</h3>
+                <button class="modal-close" onclick="closeModal('modal-ai-analytics')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-2 gap-4">
+                <div class="glass-card" style="padding:1rem;">
+                    <h4 class="text-sm caps text-muted mb-2">Patient Load Prediction</h4>
+                    <div style="font-size:1.5rem; font-weight:bold;">+15% Increase Expected</div>
+                    <p class="text-xs text-muted">Based on seasonal trends & current OPD velocity.</p>
+                </div>
+                <div class="glass-card" style="padding:1rem;">
+                    <h4 class="text-sm caps text-muted mb-2">Resource Efficiency</h4>
+                    <div style="font-size:1.5rem; font-weight:bold; color:var(--success);">Optimal (88%)</div>
+                    <p class="text-xs text-muted">Bed turnover is currently within target KPIs.</p>
+                </div>
+            </div>
+            <div class="mt-6">
+                <h4>Predictive Recommendations</h4>
+                <ul class="flex flex-column gap-2 mt-2" style="font-size:0.9rem;">
+                    <li><i class="fa-solid fa-circle-info text-primary"></i> Re-allocate 2 nurses to Cardiology OPD
+                        between 2PM-4PM.</li>
+                    <li><i class="fa-solid fa-circle-info text-primary"></i> Restock Vitamin-C and Paracetamol by
+                        tomorrow morning.</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Maintenance of Ventilator SN-902
+                        completed.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOSPITAL HEATMAP MODAL -->
+    <div class="modal-overlay" id="modal-hospital-heatmap">
+        <div class="modal-box" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-map-location-dot text-danger"></i> Live Hospital Crowd Heatmap</h3>
+                <button class="modal-close" onclick="closeModal('modal-hospital-heatmap')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div
+                style="background:rgba(0,0,0,0.05); height:400px; border-radius:12px; position:relative; overflow:hidden; border:1px solid var(--border-solid);">
+                <div
+                    style="position:absolute; top:20%; left:10%; width:30%; height:30%; background:rgba(239,68,68,0.4); border-radius:10px; border:2px solid var(--danger); display:flex; align-items:center; justify-content:center;">
+                    <strong style="color:white; font-size:0.8rem;">OPD (High)</strong>
+                </div>
+                <div
+                    style="position:absolute; top:20%; left:50%; width:40%; height:20%; background:rgba(16,185,129,0.2); border-radius:10px; border:2px solid var(--success); display:flex; align-items:center; justify-content:center;">
+                    <strong style="color:var(--success); font-size:0.8rem;">Lab (Low)</strong>
+                </div>
+                <div
+                    style="position:absolute; top:60%; left:10%; width:80%; height:30%; background:rgba(245,158,11,0.3); border-radius:10px; border:2px solid var(--warning); display:flex; align-items:center; justify-content:center;">
+                    <strong style="color:var(--warning); font-size:0.8rem;">General Ward (Moderate)</strong>
+                </div>
+                <div
+                    style="position:absolute; top:0; left:0; width:100%; height:2px; background:var(--primary); box-shadow:0 0 10px var(--primary); animation: scanLine 4s infinite linear;">
+                </div>
+            </div>
+            <p class="text-xs text-muted mt-4">Real-time occupancy tracking refreshed every 3 seconds.</p>
+        </div>
+    </div>
+
+    <!-- VOICE ASSISTANT FAB -->
+    <div id="voice-assistant-fab" onclick="toggleVoiceAssistant()"
+        style="position:fixed; bottom:30px; left:30px; z-index:999; width:60px; height:60px; border-radius:30%; background:var(--primary); box-shadow:0 8px 30px var(--primary-light); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.3s; border:2px solid rgba(255,255,255,0.2);">
+        <i class="fa-solid fa-microphone" style="color:white; font-size:1.5rem;"></i>
+        <div id="voice-waves"
+            style="position:absolute; inset:-5px; border-radius:30%; border:2px solid var(--primary); opacity:0; pointer-events:none;">
+        </div>
+    </div>
+
+    <div id="voice-status-bar"
+        style="position:fixed; bottom:100px; left:30px; background:var(--surface); border:1px solid var(--border-solid); padding:1rem; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); display:none; z-index:998; min-width:250px;">
+        <div class="flex items-center gap-3">
+            <div id="voice-indicator" style="width:10px; height:10px; background:var(--danger); border-radius:50%;">
+            </div>
+            <strong id="voice-text">Listening...</strong>
+        </div>
+        <p class="text-xs text-muted mt-1">Try "Open Laboratory" or "Book appointment"</p>
+    </div>
+
+    <!-- ==============================================
+         ADVANCED HMS MODALS
+         ============================================== -->
+
+    <!-- PATIENT EDUCATION MODAL -->
+    <div class="modal-overlay" id="modal-patient-education">
+        <div class="modal-box" style="max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-book-medical"></i> Patient Education</h3>
+                <button class="modal-close" onclick="closeModal('modal-patient-education')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="margin-top: 1rem;">
+                <h4 style="color:var(--primary); margin-bottom: 0.5rem;">Daily Health Tips</h4>
+                <ul style="list-style:disc; padding-left:1.5rem; margin-bottom: 1.5rem; color:var(--text-muted)">
+                    <li>Drink at least 8 glasses of water daily to stay hydrated.</li>
+                    <li>Ensure 7-8 hours of quality sleep for better immunity.</li>
+                    <li>Incorporate 30 minutes of physical activity into your routine.</li>
+                </ul>
+                <h4 style="color:var(--success); margin-bottom: 0.5rem;">Treatment Info</h4>
+                <p style="color:var(--text-muted); line-height:1.6;">Always follow your prescribed medication timeline.
+                    Do not abruptly stop any treatment without consulting your assigned specialist. For complex
+                    procedures, refer to your personalized discharge summary.</p>
+                <div class="glass-card" style="margin-top:1.5rem; padding:1rem; border-left:4px solid var(--warning);">
+                    <strong>Did you know?</strong> Routine check-ups can detect up to 80% of severe conditions early.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCHEDULE TELEMEDICINE MODAL -->
+    <div class="modal-overlay" id="modal-schedule-telemedicine">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-headset text-success"></i> Schedule Telemedicine</h3>
+                <button class="modal-close" onclick="closeModal('modal-schedule-telemedicine')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleScheduleTelemedicine(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Specialist</label>
+                    <select id="tele-doctor" class="form-control" required>
+                        <option value="Dr. Sarah Connor">Dr. Sarah Connor (Cardiology)</option>
+                        <option value="Dr. James Wilson">Dr. James Wilson (Neurology)</option>
+                    </select>
+                </div>
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="tele-date" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Time</label>
+                        <input type="time" id="tele-time" class="form-control" required>
+                    </div>
+                </div>
+                <div class="flex gap-4" style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-glass"
+                        style="flex:1; justify-content:center;">Schedule</button>
+                    <button type="button" class="btn btn-primary"
+                        style="flex:1; justify-content:center; background:var(--success);"
+                        onclick="closeModal('modal-schedule-telemedicine'); openModal('modal-video-call');"><i
+                            class="fa-solid fa-video"></i> Join Call Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EMERGENCY CONTACTS MODAL -->
+    <div class="modal-overlay" id="modal-emergency-contacts">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-address-book text-danger"></i> Emergency Contacts</h3>
+                <button class="modal-close" onclick="closeModal('modal-emergency-contacts')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddEmergencyContact(event)" style="margin-bottom: 2rem;">
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:2;">
+                        <input type="text" id="ec-name" class="form-control" placeholder="Contact Name" required>
+                    </div>
+                    <div class="form-group" style="flex:2;">
+                        <input type="text" id="ec-phone" class="form-control" placeholder="Phone Number" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;"><i
+                            class="fa-solid fa-plus"></i> Add</button>
+                </div>
+            </form>
+            <div id="ec-list" style="display:flex; flex-direction:column; gap:0.5rem;">
+                <!-- dynamic list -->
+            </div>
+        </div>
+    </div>
+
+    <!-- HEALTH METRICS MODAL -->
+    <div class="modal-overlay" id="modal-health-metrics">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-heart-circle-bolt text-warning"></i> Health Metrics Tracker</h3>
+                <button class="modal-close" onclick="closeModal('modal-health-metrics')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleLogMetrics(event)" style="margin-bottom: 1.5rem;">
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Blood Pressure</label>
+                        <input type="text" id="hm-bp" class="form-control" placeholder="120/80" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Sugar(mg/dL)</label>
+                        <input type="number" id="hm-sugar" class="form-control" placeholder="95" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Weight(kg)</label>
+                        <input type="number" id="hm-weight" class="form-control" placeholder="70" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top:0.5rem;">Log Metrics</button>
+            </form>
+            <div class="glass-card" style="padding:1rem;">
+                <h4 style="margin-bottom:1rem; color:var(--text-muted)">Recent Trend (Simulated Graph)</h4>
+                <div style="height:100px; display:flex; align-items:flex-end; gap:8px;">
+                    <!-- Simple CSS Bar Graph -->
+                    <div style="flex:1; background:var(--primary); height:40%; border-radius:4px 4px 0 0;"
+                        title="BP: 110/70"></div>
+                    <div style="flex:1; background:var(--primary); height:50%; border-radius:4px 4px 0 0;"
+                        title="BP: 118/75"></div>
+                    <div style="flex:1; background:var(--primary); height:45%; border-radius:4px 4px 0 0;"
+                        title="BP: 115/78"></div>
+                    <div style="flex:1; background:var(--primary); height:60%; border-radius:4px 4px 0 0;"
+                        title="BP: 120/80"></div>
+                    <div style="flex:1; background:var(--success); height:65%; border-radius:4px 4px 0 0;"
+                        title="Today"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEEDBACK MODAL -->
+    <div class="modal-overlay" id="modal-feedback">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-comments text-primary"></i> Patient Feedback</h3>
+                <button class="modal-close" onclick="closeModal('modal-feedback')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleFeedback(event)">
+                <div class="form-group">
+                    <label class="form-label">How was your experience?</label>
+                    <div class="flex gap-2 justify-center" style="font-size:1.5rem; margin-bottom:1rem;">
+                        <i class="fa-regular fa-face-angry text-danger" style="cursor:pointer;"></i>
+                        <i class="fa-regular fa-face-frown text-warning" style="cursor:pointer;"></i>
+                        <i class="fa-regular fa-face-meh text-muted" style="cursor:pointer;"></i>
+                        <i class="fa-regular fa-face-smile text-success" style="cursor:pointer;"></i>
+                        <i class="fa-regular fa-face-laugh-beam text-success" style="cursor:pointer;"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tell us more</label>
+                    <textarea class="form-control" placeholder="Share your thoughts..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MEDICATION REFILL MODAL -->
+    <div class="modal-overlay" id="modal-medication-refill">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-prescription-bottle-medical text-primary"></i> Request Refill</h3>
+                <button class="modal-close" onclick="closeModal('modal-medication-refill')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleMedRefill(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Medication</label>
+                    <select id="refill-med-name" class="form-control" required>
+                        <option value="Amoxicillin 500mg">Amoxicillin 500mg</option>
+                        <option value="Lipitor 20mg">Lipitor 20mg</option>
+                        <option value="Metformin 850mg">Metformin 850mg</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity (Units)</label>
+                    <input type="number" id="refill-qty" class="form-control" value="10" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HEALTH RECORDS MODAL -->
+    <div class="modal-overlay" id="modal-health-records">
+        <div class="modal-box" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-pdf text-danger"></i> My Medical Records</h3>
+                <button class="modal-close" onclick="closeModal('modal-health-records')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-column gap-3 mt-4">
+                <div class="glass-card flex justify-between items-center p-3">
+                    <div>
+                        <strong>Discharge Summary</strong>
+                        <p class="text-xs text-muted">Uploaded: Oct 12, 2025</p>
+                    </div>
+                    <button class="btn btn-glass btn-sm" onclick="showToast('Downloading Record...', 'info')"><i class="fa-solid fa-download"></i> Download</button>
+                </div>
+                <div class="glass-card flex justify-between items-center p-3">
+                    <div>
+                        <strong>X-Ray Report (Chest)</strong>
+                        <p class="text-xs text-muted">Uploaded: Mar 05, 2026</p>
+                    </div>
+                    <button class="btn btn-glass btn-sm" onclick="showToast('Downloading Record...', 'info')"><i class="fa-solid fa-download"></i> Download</button>
+                </div>
+                <!-- Simulating dynamic addition -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary" onclick="showToast('Upload feature restricted to verified reports.', 'warning')"><i class="fa-solid fa-cloud-arrow-up"></i> Upload External Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modal-feedback">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-comments text-primary"></i> Share Feedback</h3>
+                <button class="modal-close" onclick="closeModal('modal-feedback')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSubmitFeedback(event)">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" id="fb-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <select id="fb-rating" class="form-control" required>
+                        <option value="5">⭐⭐⭐⭐⭐ 5/5 - Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ 4/5 - Good</option>
+                        <option value="3">⭐⭐⭐ 3/5 - Average</option>
+                        <option value="2">⭐⭐ 2/5 - Poor</option>
+                        <option value="1">⭐ 1/5 - Terrible</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea id="fb-message" class="form-control" rows="3"
+                        placeholder="Tell us about your experience..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top:1rem;">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- INSURANCE MODAL -->
+    <div class="modal-overlay" id="modal-insurance">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-shield-heart text-success"></i> Manage Insurance</h3>
+                <button class="modal-close" onclick="closeModal('modal-insurance')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveInsurance(event)">
+                <div class="form-group">
+                    <label class="form-label">Insurance Provider</label>
+                    <input type="text" id="ins-provider" class="form-control" placeholder="e.g. Medicare, BlueCross"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Policy / Member ID</label>
+                    <input type="text" id="ins-id" class="form-control" placeholder="ID Number" required>
+                </div>
+                <div class="form-group"
+                    style="border: 2px dashed var(--border-solid); padding: 1rem; border-radius: 8px; text-align: center; margin-top: 1rem;">
+                    <i class="fa-solid fa-file-pdf"
+                        style="font-size:2rem; color:var(--danger); margin-bottom:0.5rem;"></i><br>
+                    <label class="btn btn-glass" style="font-size: 0.8rem; cursor:pointer;">
+                        Upload Scan
+                        <input type="file" accept="image/*,.pdf" style="display:none;"
+                            onchange="showToast('File selected', 'success')">
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top:1rem;">Save Details</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MEDICATION REFILL MODAL -->
+    <div class="modal-overlay" id="modal-medication-refill">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-prescription-bottle-medical text-primary"></i> Request Refill</h3>
+                <button class="modal-close" onclick="closeModal('modal-medication-refill')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRequestRefill(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Active Medication</label>
+                    <select id="refill-med" class="form-control" required>
+                        <option value="Lisinopril (10mg)">Lisinopril (10mg)</option>
+                        <option value="Metformin (500mg)">Metformin (500mg)</option>
+                        <option value="Atorvastatin (20mg)">Atorvastatin (20mg)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pharmacy Preference</label>
+                    <select class="form-control">
+                        <option>Hospital Branch 1</option>
+                        <option>Home Delivery (+₹50)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top:1rem;">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APPOINTMENT REMINDER MODAL -->
+    <div class="modal-overlay" id="modal-appointment-reminder">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clock text-warning"></i> Set Reminder</h3>
+                <button class="modal-close" onclick="closeModal('modal-appointment-reminder')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSetReminder(event)">
+                <div class="flex gap-4">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Reminder Date</label>
+                        <input type="date" id="rem-date" class="form-control" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">Time</label>
+                        <input type="time" id="rem-time" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Delivery Method</label>
+                    <select id="rem-type" class="form-control">
+                        <option value="SMS">SMS to Registered Mobile</option>
+                        <option value="Email">Email via Secure Server</option>
+                        <option value="Push">App Push Notification</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width:100%; justify-content:center; margin-top:1rem;">Activate Reminder</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HEALTH RECORDS MODAL -->
+    <div class="modal-overlay" id="modal-health-records">
+        <div class="modal-box" style="width:90%; max-width:800px; max-height:85vh; overflow-y:auto;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-medical text-primary"></i> Comprehensive Health Records</h3>
+                <button class="modal-close" onclick="closeModal('modal-health-records')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="grid grid-3 gap-4" style="margin-top:1.5rem;">
+                <div class="glass-card">
+                    <h4 style="margin-bottom:0.5rem; color:var(--text-main);"><i
+                            class="fa-solid fa-file-prescription text-success"></i> Prescriptions</h4>
+                    <p class="text-sm text-muted" style="margin-bottom:1rem;">Last 3 months</p>
+                    <div
+                        style="font-size:0.85rem; padding:0.5rem; border:1px solid var(--border-solid); border-radius:4px; margin-bottom:0.5rem;">
+                        <strong>Dr. Connor</strong> (1 week ago)<br>Lisinopril 10mg
+                    </div>
+                    <div
+                        style="font-size:0.85rem; padding:0.5rem; border:1px solid var(--border-solid); border-radius:4px;">
+                        <strong>Dr. Wilson</strong> (2 months ago)<br>Paracetamol 500mg
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h4 style="margin-bottom:0.5rem; color:var(--text-main);"><i
+                            class="fa-solid fa-flask text-warning"></i> Lab Reports</h4>
+                    <p class="text-sm text-muted" style="margin-bottom:1rem;">Available Downloads</p>
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding:0.5rem; background:rgba(16,185,129,0.1); border-radius:4px; margin-bottom:0.5rem;">
+                        <span>Complete Blood Count</span>
+                        <i class="fa-solid fa-download text-primary" style="cursor:pointer;"
+                            onclick="showToast('Downloading CBC.pdf', 'success')"></i>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h4 style="margin-bottom:0.5rem; color:var(--text-main);"><i
+                            class="fa-solid fa-clock-rotate-left text-primary"></i> Medical History</h4>
+                    <p class="text-sm text-muted" style="margin-bottom:1rem;">Key Events</p>
+                    <ul style="font-size:0.85rem; padding-left:1.2rem; color:var(--text-muted);">
+                        <li>Feb 2026: General Physical</li>
+                        <li>Nov 2025: X-Ray Chest</li>
+                        <li>Aug 2024: Orthopedic Consult</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANAGE STAFF MODAL (Admin) -->
+    <div class="modal-overlay" id="modal-manage-staff">
+        <div class="modal-box" style="width:90%; max-width:700px; max-height:80vh; overflow-y:auto;">
+            <div class="modal-header"
+                style="position:sticky; top:0; background:var(--surface); z-index:5; padding-bottom:1rem;">
+                <h3><i class="fa-solid fa-users-gear text-primary"></i> Staff Overview & Operations</h3>
+                <button class="modal-close" onclick="closeModal('modal-manage-staff')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="table-wrapper" style="margin-top:1rem;">
+                <table id="tbl-manage-staff" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Shift/Schedule</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY ALERTS MODAL (Admin) -->
+    <div class="modal-overlay" id="modal-inventory-alerts">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Low Inventory Alerts</h3>
+                <button class="modal-close" onclick="closeModal('modal-inventory-alerts')"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="inv-alerts-list" style="margin-top: 1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+         CUSTOMIZATION PANEL
+         ============================================== -->
+    <div class="theme-panel" id="theme-panel">
+        <h3 style="margin-bottom: 0.5rem;">Theme Customization</h3>
+        <p style="font-size: 0.85rem; margin-bottom: 2rem;">Personalize your workspace.</p>
+
+        <h4>Primary Color Accent</h4>
+        <div class="theme-colors">
+            <div class="color-circle" style="background: #5c67f2;" onclick="setThemeColor('#5c67f2', '#3a45c3')"></div>
+            <div class="color-circle" style="background: #10b981;" onclick="setThemeColor('#10b981', '#059669')"></div>
+            <div class="color-circle" style="background: #f43f5e;" onclick="setThemeColor('#f43f5e', '#e11d48')"></div>
+            <div class="color-circle" style="background: #8b5cf6;" onclick="setThemeColor('#8b5cf6', '#7c3aed')"></div>
+            <div class="color-circle" style="background: #0ea5e9;" onclick="setThemeColor('#0ea5e9', '#0284c7')"></div>
+        </div>
+
+        <h4 style="margin-top: 2rem; margin-bottom: 0.5rem;">Hospital Details</h4>
+        <div class="form-group" style="margin-bottom: 0.5rem;">
+            <input type="text" id="hs-name-input" class="form-control" placeholder="Hospital Name"
+                style="font-size: 0.85rem; padding: 0.5rem;">
+        </div>
+        <div class="form-group" style="margin-bottom: 0.5rem;">
+            <input type="text" id="hs-address-input" class="form-control" placeholder="Hospital Address"
+                style="font-size: 0.85rem; padding: 0.5rem;">
+        </div>
+        <div class="form-group">
+            <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:0.2rem">Upload
+                Hospital Logo (Image)</label>
+            <input type="file" id="hs-logo-upload" accept="image/*" class="form-control"
+                style="font-size: 0.75rem; padding: 0.2rem;">
+        </div>
+        <button class="btn btn-primary"
+            style="width: 100%; font-size: 0.85rem; padding: 0.5rem; justify-content: center;"
+            onclick="saveHospitalBrand()">Update Brand</button>
+
+
+        <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Layout Settings</h4>
+        <button class="btn btn-glass" style="width: 100%; margin-bottom: 1rem;" onclick="toggleDarkMode()">Toggle Dark
+            Mode</button>
+        <button class="btn btn-glass" style="width: 100%; justify-content: center;" onclick="toggleThemePanel()">Close
+            Panel</button>
+    </div>
+
+
+    <!-- Core Scripts -->
+    <!-- VIDEO CONSULTATION MODAL -->
+    <div class="modal-overlay" id="modal-video-call">
+        <div class="modal-box" style="max-width: 800px; padding: 0;">
+            <div class="modal-header"
+                style="border-bottom:none; position:absolute; top:0; left:0; right:0; z-index:10; background:linear-gradient(rgba(0,0,0,0.7), transparent); color:white;">
+                <h3 style="color:white;"><i class="fa-solid fa-video text-success"></i> Teleconferencing Safe Room</h3>
+            </div>
+            <div
+                style="position:relative; width: 100%; height: 500px; background: #000; border-radius: 16px; overflow:hidden;">
+                <!-- Main Feed -->
+                <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80"
+                    style="width:100%; height:100%; object-fit:cover; opacity:0.8;">
+
+                <!-- PIP Camera -->
+                <div
+                    style="position:absolute; bottom: 80px; right: 20px; width: 150px; height: 100px; background: #333; border: 2px solid white; border-radius: 8px; overflow:hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&q=80"
+                        style="width:100%; height:100%; object-fit:cover;">
+                </div>
+
+                <!-- Call Controls -->
+                <div
+                    style="position:absolute; bottom:0; left:0; right:0; height:70px; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); display:flex; justify-content:center; align-items:center; gap: 1.5rem;">
+                    <button class="btn"
+                        style="background:rgba(255,255,255,0.2); color:white; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center;"
+                        onclick="this.querySelector('i').classList.toggle('fa-microphone-slash'); this.querySelector('i').classList.toggle('text-danger');"><i
+                            class="fa-solid fa-microphone"></i></button>
+                    <button class="btn"
+                        style="background:rgba(255,255,255,0.2); color:white; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center;"
+                        onclick="this.querySelector('i').classList.toggle('fa-video-slash'); this.querySelector('i').classList.toggle('text-danger');"><i
+                            class="fa-solid fa-video"></i></button>
+                    <button class="btn btn-danger" style="border-radius:50px; padding: 0.8rem 2rem;"
+                        onclick="closeModal('modal-video-call');"><i class="fa-solid fa-phone-slash"></i> End
+                        Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADD PATIENT -->
+    <div class="modal-overlay" id="modal-add-patient">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus text-primary"></i> Register New Patient</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-patient')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRegisterPatient(event)">
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="reg-pt-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" id="reg-pt-age" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input type="text" id="reg-pt-phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Blood Group</label>
+                    <select id="reg-pt-blood" class="form-control">
+                        <option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
+                        <option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Register Patient</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ADD STAFF / DOCTOR -->
+    <div class="modal-overlay" id="modal-add-doctor">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-doctor text-primary"></i> Register New Staff</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-doctor')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleRegisterStaff(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="reg-staff-name" class="form-control" required>
+                </div>
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select id="reg-staff-role" class="form-control">
+                            <option value="Doctor">Doctor</option>
+                            <option value="Nurse">Nurse</option>
+                            <option value="Receptionist">Receptionist</option>
+                            <option value="Staff">General Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" id="reg-staff-dept" class="form-control" placeholder="e.g. Cardiology">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Add Staff Member</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ADD APPOINTMENT -->
+    <div class="modal-overlay" id="modal-add-appointment">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-calendar-plus text-primary"></i> Book Appointment</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-appointment')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleBookAppointment(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Patient</label>
+                    <select id="bk-apt-pt" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Doctor</label>
+                    <select id="bk-apt-doc" class="form-control" required></select>
+                </div>
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="bk-apt-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Slot</label>
+                        <input type="time" id="bk-apt-time" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PROCESS PAYROLL -->
+    <div class="modal-overlay" id="modal-add-salary">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-receipt text-success"></i> Disburse Monthly Salary</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-salary')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSalaryPayment(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Staff</label>
+                    <select id="sal-staff-id" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Salary Amount (₹)</label>
+                    <input type="number" id="sal-amount" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Authorize Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ADD ASSET -->
+    <div class="modal-overlay" id="modal-add-asset">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-microchip text-primary"></i> Asset Registration</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-asset')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddAsset(event)">
+                <div class="form-group">
+                    <label class="form-label">Asset Name</label>
+                    <input type="text" id="asset-name" class="form-control" required>
+                </div>
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="asset-category" class="form-control">
+                            <option>Surgical</option><option>Diagnostic</option><option>IT</option><option>General</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Serial NO</label>
+                        <input type="text" id="asset-serial" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Register Asset</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ADD AMBULANCE -->
+    <div class="modal-overlay" id="modal-add-ambulance">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-truck-medical text-danger"></i> Register Ambulance</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-ambulance')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddAmbulance(event)">
+                <div class="form-group">
+                    <label class="form-label">Vehicle Number Plate</label>
+                    <input type="text" id="amb-plate" class="form-control" required placeholder="e.g. DL-01-AB-1234">
+                </div>
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select id="amb-type" class="form-control">
+                            <option>ALS (Advanced)</option><option>BLS (Basic)</option><option>Van</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Driver Name</label>
+                        <input type="text" id="amb-driver" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">Add to Fleet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAYMENT GATEWAY MODAL -->
+    <div class="modal-overlay" id="modal-payment-gateway">
+        <div class="modal-box" style="max-width:400px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-credit-card text-primary"></i> Secure Payment</h3>
+                <button class="modal-close" onclick="closeModal('modal-payment-gateway')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="text-center p-4">
+                <div class="stat-value" id="pay-amount-display">₹0</div>
+                <p class="text-muted text-sm mt-1">Order #<span id="pay-order-id">---</span></p>
+                <div class="flex flex-column gap-3 mt-8">
+                    <button class="btn btn-glass" onclick="processFinalPayment('UPI')"><i class="fa-solid fa-mobile-screen"></i> UPI Payment</button>
+                    <button class="btn btn-glass" onclick="processFinalPayment('Card')"><i class="fa-solid fa-credit-card"></i> Debit / Credit Card</button>
+                    <button class="btn btn-glass" onclick="processFinalPayment('Net Banking')"><i class="fa-solid fa-building-columns"></i> Net Banking</button>
+                    <button class="btn btn-primary" onclick="processFinalPayment('Cash')"><i class="fa-solid fa-hand-holding-dollar"></i> Cash Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI ANALYTICS MODAL -->
+    <div class="modal-overlay" id="modal-ai-analytics">
+        <div class="modal-box" style="max-width:700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-brain text-primary"></i> AI Operational Insights</h3>
+                <button class="modal-close" onclick="closeModal('modal-ai-analytics')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-2 gap-4 mt-4">
+                <div class="glass-card" style="border-left:4px solid var(--primary);">
+                    <div class="text-sm text-muted">Predicted Peak Hours</div>
+                    <div class="text-lg font-bold">10:00 AM - 1:00 PM</div>
+                </div>
+                <div class="glass-card" style="border-left:4px solid var(--success);">
+                    <div class="text-sm text-muted">Bed Availability Forecast</div>
+                    <div class="text-lg font-bold">82% (High)</div>
+                </div>
+            </div>
+            <div class="glass-card mt-4">
+                <h4>Resource Optimization Suggestion</h4>
+                <p class="text-sm mt-2">AI suggests allocating 2 additional nurses to <strong>OPD Ward</strong> for the upcoming 2 hours based on appointment density.</p>
+                <button class="btn btn-primary btn-sm mt-4" onclick="showToast('Applying Optimization...', 'success')">Apply AI Optimization</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOSPITAL HEATMAP MODAL -->
+    <div class="modal-overlay" id="modal-hospital-heatmap">
+        <div class="modal-box" style="max-width:800px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-map-location-dot text-primary"></i> Live Facility Heatmap</h3>
+                <button class="modal-close" onclick="closeModal('modal-hospital-heatmap')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="height:400px; background:rgba(255,255,255,0.05); border-radius:12px; position:relative; overflow:hidden;" class="flex items-center justify-center">
+                <div style="position:absolute; top:20%; left:30%; width:60px; height:60px; background:rgba(239,68,68,0.4); border-radius:50%; filter:blur(15px); animation: pulse 2s infinite;"></div>
+                <div style="position:absolute; top:50%; left:60%; width:80px; height:80px; background:rgba(245,158,11,0.4); border-radius:50%; filter:blur(20px);"></div>
+                <p class="text-muted">Real-time patient density and equipment tracking map is loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANAGE STAFF MODAL -->
+    <div class="modal-overlay" id="modal-manage-staff">
+        <div class="modal-box" style="max-width:900px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-users-gear text-primary"></i> Comprehensive Staff Management</h3>
+                <button class="modal-close" onclick="closeModal('modal-manage-staff')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="table-container mt-4">
+                <table id="tbl-manage-staff">
+                    <thead>
+                        <tr>
+                            <th>Name</th><th>Role</th><th>Dept</th><th>Status</th><th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY ALERTS MODAL -->
+    <div class="modal-overlay" id="modal-inventory-alerts">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-triangle-exclamation text-warning"></i> Critical Stock Alerts</h3>
+                <button class="modal-close" onclick="closeModal('modal-inventory-alerts')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="inventory-alerts-list" class="flex flex-column gap-3 mt-4"></div>
+        </div>
+    </div>
+
+    <!-- PATIENT HISTORY MODAL (DOCTOR) -->
+    <div class="modal-overlay" id="modal-patient-history">
+        <div class="modal-box" style="max-width:800px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clock-rotate-left text-primary"></i> Patient Clinical History</h3>
+                <button class="modal-close" onclick="closeModal('modal-patient-history')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="patient-history-content" class="mt-4"></div>
+        </div>
+    </div>
+
+    <!-- NURSE VITALS MODAL -->
+    <div class="modal-overlay" id="modal-add-vitals">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-heart-pulse text-danger"></i> Record Vital Signs</h3>
+                <button class="modal-close" onclick="closeModal('modal-add-vitals')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveVitals(event)">
+                <div class="form-group">
+                    <label>Select Patient</label>
+                    <select id="vitals-pt-select" class="form-control" required></select>
+                </div>
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group"><label>B.P. (mmHg)</label><input type="text" id="v-bp" class="form-control" placeholder="120/80"></div>
+                    <div class="form-group"><label>H.R. (bpm)</label><input type="number" id="v-hr" class="form-control" placeholder="72"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Save Vitals</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STAFF ROSTER MODAL (NURSE) -->
+    <div class="modal-overlay" id="modal-staff-roster">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clock-rotate-left text-primary"></i> Ward Duty Roster</h3>
+                <button class="modal-close" onclick="closeModal('modal-staff-roster')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="staff-roster-list" class="mt-4 flex flex-column gap-2"></div>
+        </div>
+    </div>
+
+    <!-- FULFILL PRESCRIPTION MODAL (PHARMA) -->
+    <div class="modal-overlay" id="modal-fulfill-prescription">
+        <div class="modal-box" style="max-width:700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pills text-primary"></i> Pending Prescription Fulfillment</h3>
+                <button class="modal-close" onclick="closeModal('modal-fulfill-prescription')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="fulfillment-list" class="flex flex-column gap-3 mt-4"></div>
+        </div>
+    </div>
+
+    <!-- SAMPLE TRACKING MODAL (LAB) -->
+    <div class="modal-overlay" id="modal-sample-tracking">
+        <div class="modal-box" style="max-width:700px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-dropper text-primary"></i> Specimen & Sample Tracking</h3>
+                <button class="modal-close" onclick="closeModal('modal-sample-tracking')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="sample-status-list" class="flex flex-column gap-3 mt-4"></div>
+        </div>
+    </div>
+
+    <!-- BED STATUS MODAL -->
+    <div class="modal-overlay" id="modal-beds">
+        <div class="modal-box" style="max-width:900px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bed text-primary"></i> Bed Availability Matrix</h3>
+                <button class="modal-close" onclick="closeModal('modal-beds')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="bed-grid-container" class="grid grid-4 gap-4 mt-4"></div>
+        </div>
+    </div>
+
+    <!-- PUBLIC REGISTRATION MODAL (SENIOR IMPLEMENTATION) -->
+    <div class="modal-overlay hidden" id="modal-register-user">
+        <div class="modal glass-card" style="max-width:600px; padding: 2rem;">
+            <div class="modal-header" style="margin-bottom: 1.5rem;">
+                <h2 style="color:var(--primary);"><i class="fa-solid fa-user-plus"></i> Patient Registration</h2>
+                <button class="icon-btn" onclick="closeModal('modal-register-user')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-sm text-muted mb-6">Join our healthcare ecosystem. Complete the form to auto-assign a specialist based on your clinical symptoms.</p>
+            
+            <form id="public-register-form">
+                <div class="grid grid-2 gap-4">
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Full Name</label>
+                        <input type="text" id="reg-fullname" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Email / Phone</label>
+                        <input type="text" id="reg-username" class="form-control" placeholder="john@example.com" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-2 gap-4 mt-4">
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Password</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Confirm Password</label>
+                        <input type="password" id="reg-confirm-password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-3 gap-4 mt-4">
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Age</label>
+                        <input type="number" id="reg-age" class="form-control" placeholder="25" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Gender</label>
+                        <select id="reg-gender" class="form-control" required style="background: var(--bg-card); color: var(--text-main);">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs caps text-muted">Phone (Alt)</label>
+                        <input type="text" id="reg-phone" class="form-control" placeholder="+91...">
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <label class="text-xs caps text-muted">Symptoms / Primary Complaint</label>
+                    <textarea id="reg-symptoms" class="form-control" rows="3" placeholder="Describe how you are feeling (e.g. Chest pain, fever, skin rash...)" required style="resize: none;"></textarea>
+                    <p class="text-xs text-info mt-1"><i class="fa-solid fa-circle-info"></i> Our AI will auto-route you to the correct department based on this field.</p>
+                </div>
+
+                <div class="modal-actions mt-8">
+                    <button type="button" class="btn btn-glass" onclick="closeModal('modal-register-user')">Cancel Account</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1;" id="btn-register-submit">
+                        Complete Registration <i class="fa-solid fa-check-double" style="margin-left:8px;"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP SCRIPT -->
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
